@@ -1,0 +1,10 @@
+ContextMenu_EN = {
+	ContextMenu_AddBomb = "Add Pipe Bomb"
+	ContextMenu_AddProximityBomb = "Add Proximity Bomb"
+	ContextMenu_AddTimeBomb = "Add Time Bomb"
+	ContextMenu_AddRemoteBomb = "Add Remote Bomb"
+	
+	ContextMenu_AddCarTrigger = "Link to Remote Bomb"
+	
+	ContextMenu_ArmBomb = "Activate Pipe Bomb"
+}
