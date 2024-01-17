@@ -7,4 +7,6 @@ ContextMenu_EN = {
 	ContextMenu_AddCarTrigger = "Link to Remote Bomb"
 	
 	ContextMenu_ArmBomb = "Activate Pipe Bomb"
+
+	ContextMenu_CarBombSuicide = "Activating this type of bomb will immediately kill you!"
 }

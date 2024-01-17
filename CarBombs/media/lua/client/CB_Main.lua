@@ -1,34 +1,44 @@
 -- Car Bombs for Project Zomboid
 -- programmed by Kyeki, 2023
+--
+-- GPL-3.0
+-- https://github.com/Kyekii/pz-carbombs
 
 local CB = {}
 
 local old_ISVehicleMenu_showRadialMenu = ISVehicleMenu.showRadialMenu
 	
-function ISInventoryPaneContextMenu.OnTriggerRemoteController(remoteController, player)
+function ISInventoryPaneContextMenu.OnTriggerRemoteController(remoteController, player) -- this replaces the original game's OnTriggerRemoteController. this allows for other remote mods and vanilla remotes, on top of carbombs, to function properly
 	local vehicleid = remoteController:getRemoteControlID()
 	local vehicle = getVehicleById(vehicleid)
 	
 	if vehicle ~= nil then
 		local vehicledata = vehicle:getModData()
-		local remoteid = remoteController:getRemoteControlID()
-		local remotelevel = remoteController:getRemoteRange()
-		local container = remoteController:getContainer()
-		local player = container:getCharacter()
-		
-		if remotelevel == 7 then
-			remotelevel = 1
-		elseif remotelevel == 11 then
-			remotelevel = 2
-		elseif remotelevel == 15 then
-			remotelevel = 3
+		if vehicledata ~= nil then
+			if vehicledata.Bomb ~= nil and vehicledata.isRemote == true then
+				local remoteid = remoteController:getRemoteControlID()
+				local remotelevel = remoteController:getRemoteRange()
+				local container = remoteController:getContainer()
+				local player = container:getCharacter()
+					
+				if remotelevel == 7 then
+					remotelevel = 1
+				elseif remotelevel == 11 then
+					remotelevel = 2
+				elseif remotelevel == 15 then
+					remotelevel = 3
+				end
+
+				CB.ActivateBomb(player, vehicle, nil, remotelevel)
+				return
+			end 
 		end
-		
-		if vehicledata.Bomb == true and vehicledata.isRemote == true then
-			CB.ActivateBomb(player, vehicle, nil, remotelevel)
-		end
+	else 
+		local playerObj = getSpecificPlayer(player);
+		local args = { id=remoteController:getRemoteControlID(), range=remoteController:getRemoteRange() }
+		sendClientCommand(playerObj, 'object', 'triggerRemote', args)
 	end
-end
+end 
 
 function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 	local world = getSaveInfo(getWorld():getWorld())
@@ -85,7 +95,12 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 				end
 			end
 			
-			context:addOption(getText('ContextMenu_ArmBomb'), player, CB.ActivateBomb, vehicle, time, remotelevel);
+			local armbomb = context:addOption(getText('ContextMenu_ArmBomb'), player, CB.ActivateBomb, vehicle, time, remotelevel);
+			if vehicledata.isProximity ~= true and vehicledata.isTimed ~= true then
+				local tooltip = ISWorldObjectContextMenu.addToolTip();
+				tooltip.description = getText("ContextMenu_CarBombSuicide");
+				armbomb.toolTip = tooltip;
+			end
 			return
 		end	
 		
@@ -166,10 +181,6 @@ CB.AddingBomb = function(player, item, timer)
 	local engineHood = nil;
 	local inventoryItems = player:getInventory():getItems()
 	local vehicleid = vehicle:getId()
-
---	if time ~= nil then
---		CIDTimerStart[vehicleid] = time
---	end
 	
 	if item:getContainer() ~= player:getInventory() then
 		ISTimedActionQueue.add(ISInventoryTransferAction:new(player, item, item:getContainer(), player:getInventory(), nil))

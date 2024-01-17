@@ -20,7 +20,7 @@ end
 function ExplodeCar(player, vehicle)
 	print("Starting ExplodeCar on vehicle ", vehicle)
 	local vehicledata = vehicle:getModData()
-	local vehicleid = vehicle:getId() --temp
+	local vehicleid = vehicle:getId()
 	local posX = math.floor(vehicle:getX());
 	local posY = math.floor(vehicle:getY());
 	local inc = 0;
@@ -157,16 +157,6 @@ function ExplodeCar(player, vehicle)
 	end
 
 	CBKillzone(vehicleid, radius)
---[[	for k,v in ipairs(objects) do
-		print("vehicle distto ", vehicle:DistTo(v))
-		print("radius ", radius)
-		print("isCharacter ", v:isCharacter(), " isZombie ", v:isZombie())
-		if (vehicle:DistTo(v) < radius) and (v:isCharacter() or v:isZombie()) then
-			print('Killing ', v)
-			v:getBodyDamage():setHealth(0);
-		end	
-	end  --]]
-	
 	CBBurnCar(player, vehicle)
 end
 
