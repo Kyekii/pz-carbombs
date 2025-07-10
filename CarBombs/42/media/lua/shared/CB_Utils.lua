@@ -88,7 +88,7 @@ function ExplodeCar(player, vehicle)
 		local gas = container:getAllEvalRecurse(function(item)
 			return item:getType() == 'PetrolCan'
 		end, ArrayList.new())
-		
+
 		local propane = container:getAllEvalRecurse(function(item)
 			return item:getType() == 'PropaneTank'
 		end, ArrayList.new())
@@ -114,6 +114,8 @@ function ExplodeCar(player, vehicle)
 	
 	for i=1, getTableSize(flammablearray), 1 do -- add all propane tanks/gas can deltas
 		local flammableitem = flammablearray[i]
+		local delta = flammableitem:getItem():getUseDelta()
+		print(delta)
 		flammablemultiplier = flammablemultiplier + flammableitem:getUseDelta()
 	end
 	
