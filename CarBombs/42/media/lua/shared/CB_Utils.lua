@@ -83,7 +83,7 @@ function ExplodeCar(player, vehicle)
 		end
 	end
 
-	for i=1, getTableSize(containerarray), 1 do --go through all containers and find either propane tanks or gas cans (probably not the most efficient way of doing it)
+	for i=1, getTableSize(containerarray), 1 do -- go through all containers and find either propane tanks or gas cans (probably not the most efficient way of doing it)
 		local container = containerarray[i]
 		local gas = container:getAllEvalRecurse(function(item)
 			return item:getType() == 'PetrolCan'
@@ -97,7 +97,11 @@ function ExplodeCar(player, vehicle)
 			for i=0, gas:size()-1, 1 do
 				if gas:get(i) then
 					local gasitem = gas:get(i)
-					table.insert(flammablearray, gasitem)
+					if gasitem:getFluidContainer():getPrimaryFluid() ~= nil then
+						table.insert(flammablearray, gasitem)
+					else
+						flammablecount = flammablecount - 1 -- remove gas cans that have no fluid from count, as they're not "flammable"
+					end
 				end
 			end  
 		end
@@ -114,9 +118,22 @@ function ExplodeCar(player, vehicle)
 	
 	for i=1, getTableSize(flammablearray), 1 do -- add all propane tanks/gas can deltas
 		local flammableitem = flammablearray[i]
-		local delta = flammableitem:getItem():getUseDelta()
-		print(delta)
-		flammablemultiplier = flammablemultiplier + flammableitem:getUseDelta()
+		local fluidcontainer = flammableitem:getFluidContainer()
+		if fluidcontainer == nil then -- propane tanks are still "DrainableComboItem" as opposed to "ComboItem" in b42.10, which handles liquids differently from the new system
+			flammablemultiplier = flammablemultiplier + flammableitem:getUseDelta()
+		else
+			local fluid = fluidcontainer:getPrimaryFluid()
+			if fluid == nil then
+				break
+			end
+
+			local fluidstring = fluid:getFluidTypeString()
+			if fluidcontainer and fluidstring == "Petrol" then
+				local delta = (fluidcontainer:getPrimaryFluidAmount() / fluidcontainer:getCapacity()) / 8
+				print('delta for gas can fluidcontainer ', delta)
+				flammablemultiplier = flammablemultiplier + delta
+			end
+		end
 	end
 	
 	flammablemultiplier = flammablemultiplier+1.5
@@ -125,11 +142,12 @@ function ExplodeCar(player, vehicle)
 	end
 	
 	radius = math.floor(radius*flammablemultiplier) -- final radius
+	local numFires = math.floor((((radius^2)*9)-radius^2)*0.02)
+
 	print('Flammable Multiplier ', flammablemultiplier)
 	print('explosion radius: ', radius)
 	print('number of secondary fires: ', numFires)
-	local numFires = math.floor((((radius^2)*9)-radius^2)*0.02)
-	
+
 	if getWorld():getGameMode() ~= "Multiplayer" then
 		getSoundManager():PlayWorldSound("ExplodeBomb", vehicle:getSquare(), 0, 600, 1, true)
 	end
