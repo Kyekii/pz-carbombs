@@ -21,13 +21,13 @@ function ExplodeCar(player, vehicle)
 	print("Starting ExplodeCar on vehicle ", vehicle)
 	local vehicledata = vehicle:getModData()
 	local vehicleid = vehicle:getId()
-	local posX = math.floor(vehicle:getX());
-	local posY = math.floor(vehicle:getY());
-	local inc = 0;
-	local cell = getWorld():getCell();
-	local vsquare = vehicle:getSquare();
+	local posX = math.floor(vehicle:getX())
+	local posY = math.floor(vehicle:getY())
+	local inc = 0
+	local cell = getWorld():getCell()
+	local vsquare = vehicle:getSquare()
 
-	vehicledata.Bomb = nil;
+	vehicledata.Bomb = nil
 	
 	if vehicledata.isTimed == true then -- remove from timed array
 		for i=0, getTableSize(CIDTimerCars), 1 do
@@ -182,16 +182,24 @@ end
 
 function CBKillzone(vehicleid, radius)
 	
+	
 	if getWorld():getGameMode() == "Multiplayer" then
 		sendServerCommand("carbombs", "killemall", {["vehicleid"]=vehicleid,["radius"]=radius})
 	else
 		local vehicle = getVehicleById(vehicleid)
-		local cell = getWorld():getCell();
-		local objects = cell:getLuaObjectList();
+		local cell = getWorld():getCell()
+		local objects = cell:getLuaObjectList()
 		
 		for k,v in ipairs(objects) do
 			if (vehicle:DistTo(v) < radius) and (v:isCharacter() or v:isZombie()) then
-				v:Kill(nil);
+				if not v:isZombie() and v:getBodyDamage():isInfected() then -- disable coming back as a zombie via car explosion (for obvious reasons)
+					local body = v:getBodyDamage()
+					body:setInfected(false)
+					body:setInfectionMortalityDuration(0)
+					body:setInfectionTime(0)
+					body:setInfectionLevel(0)
+				end
+				v:Kill(nil)
 			end	
 		end  
 	end
@@ -214,6 +222,6 @@ function CBStartFire(player, square)
 		sendClientCommand(player, "carbombs", "setfire", {["square_x"]= square:getX(),["square_y"]= square:getY(),["square_z"]= square:getZ()})
 	else
 		local randomduration = {150,200,250,300}
-		IsoFireManager.StartFire(square:getCell(), square, true, 100, randomduration[ZombRand(4)+1]);
+		IsoFireManager.StartFire(square:getCell(), square, true, 100, randomduration[ZombRand(4)+1])
 	end
 end

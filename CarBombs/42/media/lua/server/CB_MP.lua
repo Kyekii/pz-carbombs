@@ -22,10 +22,17 @@ function OnServerCommand(module, command, args)
 		if getWorld():getGameMode() == "Multiplayer" then
 			getSoundManager():PlayWorldSound("ExplodeBomb", vehicle:getSquare(), 0, 600, 1, true)
 		end
-	
+		
 		for k,v in ipairs(objects) do
-			if (vehicle:DistTo(v) < args.radius) and (v:isCharacter() or v:isZombie()) then
-				v:Kill(nil);
+			if (vehicle:DistTo(v) < radius) and (v:isCharacter() or v:isZombie()) then
+				if not v:isZombie() and v:getBodyDamage():isInfected() then -- disable coming back as a zombie via car explosion (for obvious reasons)
+					local body = v:getBodyDamage()
+					body:setInfected(false)
+					body:setInfectionMortalityDuration(0)
+					body:setInfectionTime(0)
+					body:setInfectionLevel(0)
+				end
+				v:Kill(nil)
 			end	
 		end  
 	end
