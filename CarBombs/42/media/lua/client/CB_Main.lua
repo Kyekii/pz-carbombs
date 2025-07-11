@@ -3,7 +3,8 @@
 --
 -- GPL-3.0
 -- https://github.com/Kyekii/pz-carbombs
--- B42
+--
+-- v1.1 - B42 port
 
 local CB = {}
 
