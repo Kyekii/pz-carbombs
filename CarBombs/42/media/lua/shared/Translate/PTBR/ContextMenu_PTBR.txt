@@ -1,0 +1,12 @@
+ContextMenu_PTBR = {
+	ContextMenu_AddBomb = "Coloque uma Bomba de Cano",
+	ContextMenu_AddProximityBomb = "Coloque uma Bomba de Proximidade",
+	ContextMenu_AddTimeBomb = "Coloque uma Bomba Relógio",
+	ContextMenu_AddRemoteBomb = "Coloque uma Bomba Remota",
+
+	ContextMenu_AddCarTrigger = "Emparelhar bomba com controle",
+
+	ContextMenu_ArmBomb = "Ativar Bomba de Cano",
+
+	ContextMenu_CarBombSuicide = "Ativar este tipo de bomba irá mata-lo imediatamente!"
+}

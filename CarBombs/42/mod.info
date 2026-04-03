@@ -1,0 +1,9 @@
+name=CarBombs
+poster=poster.png
+versionMin=42.0.0
+modversion=1.0
+icon=vyvian.png
+author=vyvian
+id=CarBombs
+
+description=Rig pipe bombs to vehicles for a destructive, deadly boom

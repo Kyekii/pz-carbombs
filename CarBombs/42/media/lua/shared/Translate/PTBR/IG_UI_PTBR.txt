@@ -1,0 +1,6 @@
+IGUI_PTBR = {
+	IGUI_BombSet = "Bomba Colocada!"
+	IGUI_BombTimerArm = "Contador Ativado!"
+	IGUI_BombProxArm = "Bomba de Proximidade Ativada!"
+	IGUI_BombTooFar = "Bomba está muito longe!"
+}
