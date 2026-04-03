@@ -3,6 +3,8 @@
 --
 -- GPL-3.0
 -- https://github.com/Kyekii/pz-carbombs
+--
+-- v1.2 - B41 compatibility
 
 local CB = {}
 
