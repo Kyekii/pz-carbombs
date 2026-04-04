@@ -4,7 +4,7 @@
 -- GPL-3.0
 -- https://github.com/Kyekii/pz-carbombs
 --
--- v1.2 - B42 
+-- v1.1 - B42 port
 
 local CB = {}
 
@@ -135,7 +135,7 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 				context:addSubMenu(bombOption, bombSubMenu)
 				
 			--	context:addOption(getText('ContextMenu_AddTimeBomb'), player, CB.AddingBomb, player, item, item);
-				bombSubMenu:addOption('10 seconds', player, CB.AddingBomb, item, 0.00000001e9); --scientific notation 10
+				bombSubMenu:addOption('10 seconds', player, CB.AddingBomb, item, 10);
 				bombSubMenu:addOption('30 seconds', player, CB.AddingBomb, item, 30);
 				bombSubMenu:addOption('1 minute', player, CB.AddingBomb, item, 60);
 				bombSubMenu:addOption('5 minutes', player, CB.AddingBomb, item, 300);
@@ -209,6 +209,55 @@ end
 CB.ActivateBomb = function(player, vehicle, time, remotelevel)
 	ISTimedActionQueue.add(ActivatingBomb:new(player, vehicle, time, remotelevel))
 	return
+end
+
+function CB.CrashCheck()
+	if SandboxVars.CarBombs.AccidentalDetonation then
+		if getWorld():getGameMode() == "Multiplayer" then
+			players = getOnlinePlayers();
+		else
+			players = IsoPlayer.getPlayers()
+		end
+
+		for i=0, players:size() - 1, 1 do
+	--		print('array', players:get(i))
+			if players:get(i) ~= nil then
+				local player = players:get(i)
+				if player:isSeatedInVehicle() then
+					local vehicle = player:getVehicle()
+					local vehicledata = vehicle:getModData()
+					local velocityvector = Vector3f.new()
+					local velocitychangedelta = 2.0
+					velocityvector = vehicle:getLinearVelocity(velocityvector)
+					
+					if velocityvector:length() > 5.0 then
+						velocitychangedelta = 2.0
+						print('velocitydelta now 2.0')
+					elseif velocityvector:length() > 10.0 then
+						velocitychangedelta = 4.0
+						print('velocitydelta now 4.0')
+					end
+
+				--	print('Player is in car ', vehicle:getScriptName(), ' velocity ', velocityvector, ' last velocity ', vehicledata.lastVelocity, ' isCollide ', vehicle:isCollidedThisFrame())
+				--	print('lastVelocity length, velocity length: ', vehicledata.lastVelocity:length(), ' / ', velocityvector:length())
+				
+						
+					print('crash compare ', velocityvector:length(), ' - ', vehicledata.lastVelocity:length(), ' > ', velocitychangedelta)
+					if vehicledata.lastVelocity:length() > velocityvector:length() and (vehicledata.lastVelocity:length() - velocityvector:length()) > velocitychangedelta then
+						print('Probably an accident here! ', vehicledata.lastVelocity:length(), ' - ', velocityvector:length(), ' > ', velocitychangedelta)
+					end
+						
+						
+					if vehicle:isCollidedThisFrame() and vehicledata.lastVelocity and vehicledata.lastVelocity:length() > velocityvector:length() then
+						print('CarBombs accident! bombhealth ', vehicledata.bombHealth)
+					end	
+	
+					vehicledata.lastVelocity = velocityvector
+				end
+			end
+		end
+		-- vehicledata.bombHealth 
+	end
 end
 
 function CB.BombCheck()
@@ -292,3 +341,4 @@ end
 
 Events.OnFillWorldObjectContextMenu.Add(CB.OnFillWorldObjectContextMenu)
 Events.OnTick.Add(CB.BombCheck)
+Events.OnTick.Add(CB.CrashCheck)

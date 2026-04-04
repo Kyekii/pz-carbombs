@@ -54,6 +54,11 @@ function PlantingBomb:perform()
 		vehicledata.isTimedLength = self.timer
 	end
 	
+	if SandboxVars.CarBombs.AccidentalDetonation then
+		vehicledata.bombHealth = SandboxVars.CarBombs.AccidentalDetonationHealth
+		vehicledata.lastVelocity = Vector3f.new()
+	end
+	
 	self.character:getInventory():Remove(self.item)
 	--FinishTimeBasedAction
 	ISBaseTimedAction.perform(self)

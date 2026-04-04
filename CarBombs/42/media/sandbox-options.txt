@@ -1,0 +1,13 @@
+VERSION = 1,
+
+option CarBombs.AccidentalDetonation
+{
+    type = boolean, default = false,
+    page = CarBombs, translation CarBombs_AccidentalDetonation,
+}
+
+option CarBombs.AccidentalDetonationHealth
+{
+    type = integer, min = 1, max = 100, default = 10,
+    page = CarBombs, translation CarBombs_AccidentalDetonationHealth,
+}
