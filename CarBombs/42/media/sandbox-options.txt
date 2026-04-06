@@ -2,12 +2,36 @@ VERSION = 1,
 
 option CarBombs.AccidentalDetonation
 {
-    type = boolean, default = false,
+    type = boolean, default = true,
     page = CarBombs, translation CarBombs_AccidentalDetonation,
 }
 
 option CarBombs.AccidentalDetonationHealth
 {
-    type = integer, min = 1, max = 100, default = 10,
+    type = integer, min = 1, max = 200, default = 50,
     page = CarBombs, translation CarBombs_AccidentalDetonationHealth,
+}
+
+option CarBombs.Ditching
+{
+    type = boolean, default = true,
+    page = CarBombs, translation CarBombs_Ditching,
+}
+
+option CarBombs.DitchingMaxChance
+{
+    type = double, min = 0.00, max = 1.00, default = 0.70,
+    page = CarBombs, translation CarBombs_DitchingMaxChance,
+}
+
+option CarBombs.DitchingStartThreshold
+{
+    type = double, min = 0.00, max = 1.00, default = 0.75,
+    page = CarBombs, translation CarBombs_DitchingStartThreshold,
+}
+
+option CarBombs.DitchingEndThreshold
+{
+    type = double, min = 0.00, max = 1.00, default = 0.25,
+    page = CarBombs, translation CarBombs_DitchingEndThreshold,
 }
