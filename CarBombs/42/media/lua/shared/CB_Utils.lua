@@ -26,6 +26,12 @@ function ExplodeCar(player, vehicle)
 	local inc = 0
 	local cell = getWorld():getCell()
 	local vsquare = vehicle:getSquare()
+	
+	for i=0, vehicle:getMaxPassengers() - 1, 1 do -- eject all players seated in vehicle, they are not long for this world
+		if vehicle:getCharacter(i) then
+			vehicle:exit(vehicle:getCharacter(i))
+		end
+	end
 
 	vehicledata.Bomb = nil
 	
