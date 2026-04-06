@@ -3,5 +3,6 @@
   "IGUI_BombSet": "Bomb set.",
   "IGUI_BombTimerArm": "Timer activated.",
   "IGUI_BombProxArm": "Proximity activated.",
-  "IGUI_BombTooFar": "Bomb too far!"
+  "IGUI_BombTooFar": "Bomb too far!",
+  "IGUI_BombDitched": "The bomb on the vehicle broke off!"
 }

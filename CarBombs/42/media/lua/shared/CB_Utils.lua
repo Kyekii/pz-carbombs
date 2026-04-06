@@ -17,8 +17,52 @@ function getTableSize(t)
     return count
 end
 
+function RemoveBomb(player, vehicle)
+	local vehicledata = vehicle:getModData()
+	local bombtype = 'Base.PipeBomb'
+
+	vehicledata.Bomb = nil
+	
+	if vehicledata.isTimed then -- remove from timed array
+		bombtype = 'Base.PipeBombTriggered'
+		for i=0, getTableSize(CIDTimerCars), 1 do
+			if CIDTimerCars[i] == vehicleid then
+				table.remove(CIDTimerCars, i)
+				table.remove(CIDTimerTick, vehicleid)
+				table.remove(CIDTimerSeconds, vehicleid)
+				break;
+			end
+		end
+	end
+	
+	if vehicledata.isProximity then -- remove from proximity array
+		bombtype = 'Base.PipeBombSensorV', vehicledata.isProximitySensor
+		for i=0, getTableSize(CIDProximityCars), 1 do
+			if CIDProximityCars[i] == vehicleid then
+				table.remove(CIDProximityCars, i)
+				break;
+			end
+		end
+	end
+
+	if vehicledata.isRemote then
+		bombtype = 'Base.PipeBombRemote'
+	end
+
+	if player == nil and SandboxVars.CarBombs.Ditching then -- initiate ditching, play noise and tell passengers the bomb fell off
+		local worlditem = instanceItem(bombtype)
+		vehicle:getSquare():AddWorldInventoryItem(worlditem, 0.5, 0.5, 0)
+		getSoundManager():PlayWorldSound("BreakMetalItem", vehicle:getSquare(), 0, 20, 5.0, true)
+
+		for i=0, vehicle:getMaxPassengers() - 1, 1 do
+			if vehicle:getCharacter(i) then
+				vehicle:getCharacter(i):Say(getText("IGUI_BombDitched"))
+			end
+		end
+	end
+end
+
 function ExplodeCar(player, vehicle)
-	print("Starting ExplodeCar on vehicle ", vehicle)
 	local vehicledata = vehicle:getModData()
 	local vehicleid = vehicle:getId()
 	local posX = math.floor(vehicle:getX())
@@ -32,29 +76,9 @@ function ExplodeCar(player, vehicle)
 			vehicle:exit(vehicle:getCharacter(i))
 		end
 	end
+	
+	RemoveBomb(nil, vehicle)
 
-	vehicledata.Bomb = nil
-	
-	if vehicledata.isTimed == true then -- remove from timed array
-		for i=0, getTableSize(CIDTimerCars), 1 do
-			if CIDTimerCars[i] == vehicleid then
-				table.remove(CIDTimerCars, i)
-				table.remove(CIDTimerTick, vehicleid)
-				table.remove(CIDTimerSeconds, vehicleid)
-				break;
-			end
-		end
-	end
-	
-	if vehicledata.isProximity == true then -- remove from proximity array
-		for i=0, getTableSize(CIDProximityCars), 1 do
-			if CIDProximityCars[i] == vehicleid then
-				table.remove(CIDProximityCars, i)
-				break;
-			end
-		end
-	end
-	
 	local fuel = vehicle:getRemainingFuelPercentage() * 0.015 -- returns 0-100 - Remaining Fuel: 98.6893814 
 	local radius = 5;
 	radius = math.floor(radius*fuel)

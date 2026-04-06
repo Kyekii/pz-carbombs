@@ -226,39 +226,55 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 					-- pz's driving system uses vectors in java to determine crash speeds, but i couldn't figure out a way to access them via lua. so i just made my own vectors instead.
 					local vehicle = player:getVehicle()
 					local vehicledata = vehicle:getModData()
-					local velocityvector = Vector3f.new() -- initializes vector
-					local velocitychangedelta = 1.0 -- if the difference in last velocity vs current is greater than delta, car probably crashed
 
-					velocityvector = vehicle:getLinearVelocity(velocityvector)
-					
-					if velocityvector:length() > 6.0 then -- change delta if vehicle is moving fast enough. braking at high speeds otherwise could be misinterpreted
-						velocitychangedelta = 2.0
-						print('velocitydelta now 2.0')
-					elseif velocityvector:length() > 10.0 then
-						velocitychangedelta = 3.0
-						print('velocitydelta now 3.0')
-					end
+					if vehicledata.Bomb then
+						local velocityvector = Vector3f.new() -- initializes vector
+						local velocitychangedelta = 1.0 -- if the difference in last velocity vs current is greater than delta, car probably crashed
 
-				--	print('Player is in car ', vehicle:getScriptName(), ' velocity ', velocityvector, ' last velocity ', vehicledata.lastVelocity, ' isCollide ', vehicle:isCollidedThisFrame())
-					if vehicledata.lastVelocity then
-						if vehicledata.lastVelocity:length() > velocityvector:length() and (vehicledata.lastVelocity:length() - velocityvector:length()) > velocitychangedelta then
-							vehicledata.bombHealth = vehicledata.bombHealth - math.ceil(vehicledata.lastVelocity:length() - velocityvector:length())
-							print('CarBombs accident! bombhealth ', vehicledata.bombHealth)
-							print('Velocity difference: ', vehicledata.lastVelocity:length() - velocityvector:length())
-							if vehicledata.bombHealth <= 0.0 then
-								print('CarBomb go boom due to impact')
-
-								if getWorld():getGameMode() == "Multiplayer" then
-									sendClientCommand(vehicle:getId(), "carbombs", "detonate", {["vehicleid"]=vehicle:getId()})
-								else 
-									ExplodeCar(nil, vehicle)
-								end
-							end
-						end	
-					end
+						velocityvector = vehicle:getLinearVelocity(velocityvector)
 						
-	
-					vehicledata.lastVelocity = velocityvector
+						if velocityvector:length() > 6.0 then -- change delta if vehicle is moving fast enough. braking at high speeds otherwise could be misinterpreted
+							velocitychangedelta = 2.0
+							print('velocitydelta now 2.0')
+						elseif velocityvector:length() > 10.0 then
+							velocitychangedelta = 3.0
+							print('velocitydelta now 3.0')
+						end
+						
+						if vehicledata.lastVelocity then
+							if vehicledata.lastVelocity:length() > velocityvector:length() and (vehicledata.lastVelocity:length() - velocityvector:length()) > velocitychangedelta then
+								vehicledata.bombHealth = vehicledata.bombHealth - math.ceil(vehicledata.lastVelocity:length() - velocityvector:length())
+								print('CarBombs accident! bombhealth ', vehicledata.bombHealth)
+								print('Velocity difference: ', vehicledata.lastVelocity:length() - velocityvector:length())
+
+								if vehicledata.bombHealth <= 0.0 then
+									if getWorld():getGameMode() == "Multiplayer" then
+										sendClientCommand(vehicle:getId(), "carbombs", "detonate", {["vehicleid"]=vehicle:getId()})
+									else 
+										ExplodeCar(nil, vehicle)
+									end
+								end
+
+								if SandboxVars.CarBombs.Ditching and vehicledata.bombHealth >= 0.0 then
+									if (SandboxVars.CarBombs.DitchingStartThreshold * vehicledata.bombStartHealth) >= vehicledata.bombHealth then
+										local ditchodds = (1 - (vehicledata.bombHealth)/(SandboxVars.CarBombs.DitchingStartThreshold * vehicledata.bombStartHealth))
+										local ditchroll = ZombRandFloat(0.00, 1.00)
+
+										if SandboxVars.CarBombs.DitchingEndThreshold * vehicledata.bombStartHealth >= vehicledata.bombHealth then
+											ditchodds = SandboxVars.CarBombs.DitchingMaxChance
+										end
+
+										print('ditchodds ', ditchodds, 'ditchroll ', ditchroll)
+										if ditchroll <= ditchodds then
+											print('Successful ditch roll')
+											RemoveBomb(nil, vehicle)
+										end
+									end
+								end
+							end	
+						end
+						vehicledata.lastVelocity = velocityvector
+					end
 				end
 			end
 		end

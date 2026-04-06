@@ -58,6 +58,10 @@ function PlantingBomb:perform()
 		vehicledata.bombHealth = SandboxVars.CarBombs.AccidentalDetonationHealth
 		vehicledata.lastVelocity = Vector3f.new()
 	end
+
+	if SandboxVars.CarBombs.Ditching then
+		vehicledata.bombStartHealth = vehicledata.bombHealth
+	end
 	
 	self.character:getInventory():Remove(self.item)
 	--FinishTimeBasedAction
