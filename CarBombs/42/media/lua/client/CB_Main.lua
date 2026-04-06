@@ -211,7 +211,7 @@ CB.ActivateBomb = function(player, vehicle, time, remotelevel)
 	return
 end
 
-function CB.CrashCheck()
+function CB.CrashCheck() -- check every tick to find players currently driving and check their velocity for sudden changes
 	if SandboxVars.CarBombs.AccidentalDetonation then
 		if getWorld():getGameMode() == "Multiplayer" then
 			players = getOnlinePlayers();
@@ -219,44 +219,49 @@ function CB.CrashCheck()
 			players = IsoPlayer.getPlayers()
 		end
 
-		for i=0, players:size() - 1, 1 do
-	--		print('array', players:get(i))
+		for i=0, players:size() - 1, 1 do -- this could be inefficient? idk
 			if players:get(i) ~= nil then
 				local player = players:get(i)
 				if player:isSeatedInVehicle() then
+					-- pz's driving system uses vectors in java to determine crash speeds, but i couldn't figure out a way to access them via lua. so i just made my own vectors instead.
 					local vehicle = player:getVehicle()
 					local vehicledata = vehicle:getModData()
-					local velocityvector = Vector3f.new()
-					local velocitychangedelta = 2.0
+					local velocityvector = Vector3f.new() -- initializes vector
+					local velocitychangedelta = 1.0 -- if the difference in last velocity vs current is greater than delta, car probably crashed
+
 					velocityvector = vehicle:getLinearVelocity(velocityvector)
 					
-					if velocityvector:length() > 5.0 then
+					if velocityvector:length() > 6.0 then -- change delta if vehicle is moving fast enough. braking at high speeds otherwise could be misinterpreted
 						velocitychangedelta = 2.0
 						print('velocitydelta now 2.0')
 					elseif velocityvector:length() > 10.0 then
-						velocitychangedelta = 4.0
-						print('velocitydelta now 4.0')
+						velocitychangedelta = 3.0
+						print('velocitydelta now 3.0')
 					end
 
 				--	print('Player is in car ', vehicle:getScriptName(), ' velocity ', velocityvector, ' last velocity ', vehicledata.lastVelocity, ' isCollide ', vehicle:isCollidedThisFrame())
-				--	print('lastVelocity length, velocity length: ', vehicledata.lastVelocity:length(), ' / ', velocityvector:length())
-				
-						
-					print('crash compare ', velocityvector:length(), ' - ', vehicledata.lastVelocity:length(), ' > ', velocitychangedelta)
-					if vehicledata.lastVelocity:length() > velocityvector:length() and (vehicledata.lastVelocity:length() - velocityvector:length()) > velocitychangedelta then
-						print('Probably an accident here! ', vehicledata.lastVelocity:length(), ' - ', velocityvector:length(), ' > ', velocitychangedelta)
+					if vehicledata.lastVelocity then
+						if vehicledata.lastVelocity:length() > velocityvector:length() and (vehicledata.lastVelocity:length() - velocityvector:length()) > velocitychangedelta then
+							vehicledata.bombHealth = vehicledata.bombHealth - math.ceil(vehicledata.lastVelocity:length() - velocityvector:length())
+							print('CarBombs accident! bombhealth ', vehicledata.bombHealth)
+							print('Velocity difference: ', vehicledata.lastVelocity:length() - velocityvector:length())
+							if vehicledata.bombHealth <= 0.0 then
+								print('CarBomb go boom due to impact')
+
+								if getWorld():getGameMode() == "Multiplayer" then
+									sendClientCommand(vehicle:getId(), "carbombs", "detonate", {["vehicleid"]=vehicle:getId()})
+								else 
+									ExplodeCar(nil, vehicle)
+								end
+							end
+						end	
 					end
 						
-						
-					if vehicle:isCollidedThisFrame() and vehicledata.lastVelocity and vehicledata.lastVelocity:length() > velocityvector:length() then
-						print('CarBombs accident! bombhealth ', vehicledata.bombHealth)
-					end	
 	
 					vehicledata.lastVelocity = velocityvector
 				end
 			end
 		end
-		-- vehicledata.bombHealth 
 	end
 end
 
