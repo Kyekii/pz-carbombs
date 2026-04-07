@@ -51,7 +51,6 @@ function RemoveBomb(player, vehicle, wasDismantled)
 
 	if player then -- if player is specified, we know it's CB.UninstallingBomb timedaction
 		if wasDismantled then
-			print('wasDismantled')
 			local worldItem = nil
 			for i=0, ZombRand(3)+1, 1 do -- 1-3 electronic scrap
 				worldItem = instanceItem('Base.ElectronicsScrap')
@@ -68,16 +67,31 @@ function RemoveBomb(player, vehicle, wasDismantled)
 			return
 		else
 			local inventoryItem = instanceItem(bombType)
-			print('Granting player ', bombType)
 			player:getInventory():AddItem(inventoryItem)
 			return
 		end
 	end
 
 	if player == nil and SandboxVars.CarBombs.Ditching then -- initiate ditching, play noise and tell passengers the bomb fell off
-		local worldItem = instanceItem(bombType)
-		vehicle:getSquare():AddWorldInventoryItem(worldItem, 0.5, 0.5, 0)
-		getSoundManager():PlayWorldSound("BreakMetalItem", vehicle:getSquare(), 0, 20, 5.0, true)
+		if wasDismantled then
+			local worldItem = nil
+			for i=0, ZombRand(3)+1, 1 do -- 1-3 electronic scrap
+				worldItem = instanceItem('Base.ElectronicsScrap')
+				vehicle:getSquare():AddWorldInventoryItem(worldItem, ZombRand(0.1, 0.5), ZombRand(0.1, 0.5), 0)
+			end
+			if (ZombRand(0, 100)+1)/100 > 0.50 then
+				worldItem = instanceItem('Base.MetalPipe_Broken')
+				worldItem:setCondition(ZombRand((worldItem:getConditionMax()/2))+1) -- make sure the random condition is always below 50%
+				vehicle:getSquare():AddWorldInventoryItem(worldItem, ZombRand(0.1, 0.5), ZombRand(0.1, 0.5), 0)
+			else 
+				worldItem = instanceItem('Base.MetalPipe') 
+				worldItem:setCondition(ZombRand(worldItem:getConditionMax()/2) + (worldItem:getConditionMax()/2)) -- condition always above 50%
+			end
+		else
+			local worldItem = instanceItem(bombType)
+			vehicle:getSquare():AddWorldInventoryItem(worldItem, 0.5, 0.5, 0)
+			getSoundManager():PlayWorldSound("BreakMetalItem", vehicle:getSquare(), 0, 20, 5.0, true)
+		end
 
 		for i=0, vehicle:getMaxPassengers() - 1, 1 do
 			if vehicle:getCharacter(i) then

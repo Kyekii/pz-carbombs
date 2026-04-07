@@ -297,8 +297,13 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 										print('ditchodds ', ditchodds, 'ditchroll ', ditchroll)
 										if ditchroll <= ditchodds then
 											print('Successful ditch roll')
-											RemoveBomb(nil, vehicle, false)
-											-- wip: add chance of bomb falling off and being scrapped
+											local breakchance = ZombRand(100)+1
+											print('breakchance ', breakchance)
+											if breakchance > 40 then
+												RemoveBomb(nil, vehicle, true)
+											else
+												RemoveBomb(nil, vehicle, false)
+											end
 										end
 									end
 								end
