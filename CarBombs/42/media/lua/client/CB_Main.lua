@@ -259,7 +259,7 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 					if vehicledata.Bomb then
 						local velocityvector = Vector3f.new() -- initializes vector
 						local velocitychangedelta = 1.0 -- if the difference in last velocity vs current is greater than delta, car probably crashed
-
+						
 						velocityvector = vehicle:getLinearVelocity(velocityvector)
 						
 						if velocityvector:length() > 6.0 then -- change delta if vehicle is moving fast enough. braking at high speeds otherwise could be misinterpreted
@@ -269,7 +269,7 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 							velocitychangedelta = 3.0
 							print('velocitydelta now 3.0')
 						end
-						
+
 						if vehicledata.lastVelocity then -- if the difference in last velocity vector and current velocity vector is greater than delta, crash
 							if vehicledata.lastVelocity:length() > velocityvector:length() and (vehicledata.lastVelocity:length() - velocityvector:length()) > velocitychangedelta then
 								vehicledata.bombHealth = vehicledata.bombHealth - math.ceil(vehicledata.lastVelocity:length() - velocityvector:length())
@@ -284,7 +284,8 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 									end
 								end
 
-								if SandboxVars.CarBombs.Ditching and vehicledata.bombHealth >= 0.0 then
+								-- ditching is disabled above 40km/h. this incentivizes cautious driving, vs slamming into trees and expecting the bomb to just "fall off"
+								if SandboxVars.CarBombs.Ditching and vehicledata.bombHealth >= 0.0 and vehicle:getCurrentSpeedKmHour() < 40 then
 									if (SandboxVars.CarBombs.DitchingStartThreshold * vehicledata.bombStartHealth) >= vehicledata.bombHealth then
 										local ditchodds = (1 - (vehicledata.bombHealth)/(SandboxVars.CarBombs.DitchingStartThreshold * vehicledata.bombStartHealth))
 										local ditchroll = ZombRandFloat(0.00, 1.00)
