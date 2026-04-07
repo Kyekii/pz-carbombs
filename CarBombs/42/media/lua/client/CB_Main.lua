@@ -191,23 +191,26 @@ end
 
 function ISVehicleMenu.showRadialMenu(player)
 	old_ISVehicleMenu_showRadialMenu(player)
-	
+
+	local isPaused = UIManager.getSpeedControls() and UIManager.getSpeedControls():getCurrentGameSpeed() == 0
+	if isPaused then return end
+
 	local vehicle = player:getVehicle()
 	local menu = getPlayerRadialMenu(player:getPlayerNum())
 	
-	if menu:isReallyVisible() then
-		if menu.joyfocus then
-			setJoypadFocus(player:getplayerObjNum(), nil)
-		end 
-		menu:undisplay()
-		return
-	end
-	
 	if vehicle ~= nil then
+		if menu:isReallyVisible() then
+			if menu.joyfocus then
+				setJoypadFocus(player:getplayerObjNum(), nil)
+			end 
+			menu:undisplay()
+			return
+		end
+
 		local vehicledata = vehicle:getModData()
 		local seat = vehicle:getSeat(player)
 		if seat == 0 or seat == 1 then
-			if vehicledata.Bomb then	
+			if vehicledata.Bomb then
 				menu:addSlice(getText('ContextMenu_ArmBomb'), getTexture("media/ui/vehicles/carActivateBomb.png"), CB.ActivateBomb, player, vehicle, nil) 
 				menu:addToUIManager()
 			end
