@@ -1,5 +1,4 @@
 {
-
   "ContextMenu_AddBomb": "Add Pipe Bomb",
   "ContextMenu_AddProximityBomb": "Add Proximity Bomb",
   "ContextMenu_AddTimeBomb": "Add Time Bomb",
@@ -8,5 +7,8 @@
   "ContextMenu_ArmBomb": "Activate Bomb",
   "ContextMenu_UninstallBomb": "Uninstall Bomb",
 
-  "ContextMenu_CarBombSuicide": "Activating this type of bomb will immediately kill you!"
+  "ContextMenu_CarBombSuicide": "Activating this type of bomb will immediately kill you!",
+  "ContextMenu_BombStats": "Bomb Health: ",
+  "ContextMenu_BombStats2": "Chance of uninstalling: ",
+  "ContextMenu_BombStats3": "Chance of breaking bomb on uninstall: "
 }

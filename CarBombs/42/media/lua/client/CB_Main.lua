@@ -76,6 +76,10 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 			return
 		end
 		
+		if player:getPerkLevel(Perks.Electricity) < 1 or player:getPerkLevel(Perks.Mechanics) <= 0 then -- players must be Electricity 2 and Mechanics 1 to add/remove bombs
+			return
+		end
+
 		if vehicledata.Bomb then
 			if CIDTimerTick[vehicleid] ~= nil then
 				return
@@ -103,18 +107,22 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 				armbomb.toolTip = tooltip;
 			end
 
-			if player:getPerkLevel(Perks.Electricity) < 1 or player:getPerkLevel(Perks.Mechanics) <= 0 then -- need Electricity 2 and Mechanics 1 to remove bombs, too
-				return
-			end
-
 			local uninstallbomb = context:addOption(getText("ContextMenu_UninstallBomb"), player, CB.UninstallBomb, vehicle)
-			local tooltip = ISWorldObjectContextMenu.addToolTip();
-			tooltip.description = getText("ContextMenu_CarBombSuicide");
-			armbomb.toolTip = tooltip;
-			return
-		end	
-		
-		if player:getPerkLevel(Perks.Electricity) < 1 or player:getPerkLevel(Perks.Mechanics) <= 0 then -- players must be Electricity 2 and Mechanics 1 to plant bombs
+			if SandboxVars.CarBombs.AccidentalDetonation then
+				local successchance, dismantlechance = GetUninstallChance(player)
+				uninstallbomb.toolTip = ISWorldObjectContextMenu.addToolTip()
+				
+			--	uninstallbomb.toolTip:setName(getText('ContextMenu_BombStats') .. vehicledata.bombHealth .. '/' .. vehicledata.bombStartHealth)
+				local bombdescription = '<SIZE:large>' .. getText('ContextMenu_BombStats') .. 
+					vehicledata.bombHealth .. '/' .. vehicledata.bombStartHealth .. '\n'
+				
+				if SandboxVars.CarBombs.UninstallFail then
+					bombdescription = bombdescription .. '<SIZE:small>' ..
+						'\n' .. getText('ContextMenu_BombStats2') .. '\n' .. successchance * 100 .. '%' ..
+						'\n' .. getText('ContextMenu_BombStats3') .. '\n' .. dismantlechance * 100 .. '%'
+				end
+				uninstallbomb.toolTip.description = bombdescription
+			end
 			return
 		end
 		
