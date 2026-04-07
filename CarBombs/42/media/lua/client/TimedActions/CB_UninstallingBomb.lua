@@ -24,22 +24,7 @@ end
 
 function UninstallingBomb:perform()
 	if SandboxVars.CarBombs.UninstallFail then
-		local successchance = 0
-		local dismantlechance = 0
-
-		if self.character:getPerkLevel(Perks.Electricity) < 2 then -- since we know the player will need electricity 2 to uninstall, only 3 and above will actually increase the odds
-		 	successchance = SandboxVars.CarBombs.UninstallSuccessChance + (0.10 * self.character:getPerkLevel(Perks.Electricity))
-			dismantlechance = SandboxVars.CarBombs.UninstallDismantleChance - (0.10 * self.character:getPerkLevel(Perks.Electricity))
-		else
-			successchance = SandboxVars.CarBombs.UninstallSuccessChance 
-			dismantlechance = SandboxVars.CarBombs.UninstallDismantleChance
-		end
-		
-		if successchance >= 1 then
-			successchance = 1
-		elseif dismantlechance <= 0 then
-			dismantlechance = 0
-		end
+		local successchance, dismantlechance = GetUninstallChance(self.character)
 
 		local roll = (ZombRand(0, 100)+1)/100 -- first roll to determine if you actually took the bomb off or not
 		print('SuccessRoll: ', roll, ' >= ', successchance)

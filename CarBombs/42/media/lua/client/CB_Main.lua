@@ -108,9 +108,9 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 			end
 
 			local uninstallbomb = context:addOption(getText("ContextMenu_UninstallBomb"), player, CB.UninstallBomb, vehicle)
-		--	local tooltip = ISWorldObjectContextMenu.addToolTip();
-		--	tooltip.description = getText("ContextMenu_CarBombSuicide");
-		--	armbomb.toolTip = tooltip;
+			local tooltip = ISWorldObjectContextMenu.addToolTip();
+			tooltip.description = getText("ContextMenu_CarBombSuicide");
+			armbomb.toolTip = tooltip;
 			return
 		end	
 		

@@ -101,6 +101,27 @@ function RemoveBomb(player, vehicle, wasDismantled)
 	end
 end
 
+function GetUninstallChance(player)
+	local successchance = nil
+	local dismantlechance = nil
+
+	if player:getPerkLevel(Perks.Electricity) < 2 then -- since we know the player will need electricity 2 to uninstall, only 3 and above will actually increase the odds
+		successchance = SandboxVars.CarBombs.UninstallSuccessChance + (0.10 * self.character:getPerkLevel(Perks.Electricity))
+		dismantlechance = SandboxVars.CarBombs.UninstallDismantleChance - (0.10 * self.character:getPerkLevel(Perks.Electricity))
+	else
+		successchance = SandboxVars.CarBombs.UninstallSuccessChance 
+		dismantlechance = SandboxVars.CarBombs.UninstallDismantleChance
+	end
+			
+	if successchance >= 1 then
+		successchance = 1
+	elseif dismantlechance <= 0 then
+		dismantlechance = 0
+	end
+
+	return successchance, dismantlechance
+end
+
 function ExplodeCar(player, vehicle)
 	local vehicledata = vehicle:getModData()
 	local vehicleid = vehicle:getId()
