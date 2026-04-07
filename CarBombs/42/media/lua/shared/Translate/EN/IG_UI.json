@@ -4,5 +4,8 @@
   "IGUI_BombTimerArm": "Timer activated.",
   "IGUI_BombProxArm": "Proximity activated.",
   "IGUI_BombTooFar": "Bomb too far!",
-  "IGUI_BombDitched": "The bomb on the vehicle broke off!"
+  "IGUI_BombDitched": "The bomb on the vehicle broke off!",
+  "IGUI_BombUninstallFail": "I couldn't remove it...",
+  "IGUI_BombUninstallDismantle": "I removed it, but the bomb fell apart!",
+  "IGUI_BombUninstallSuccess": "Bomb uninstalled."
 }

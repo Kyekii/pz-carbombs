@@ -4,10 +4,9 @@
   "ContextMenu_AddProximityBomb": "Add Proximity Bomb",
   "ContextMenu_AddTimeBomb": "Add Time Bomb",
   "ContextMenu_AddRemoteBomb": "Add Remote Bomb",
-
   "ContextMenu_AddCarTrigger": "Link to Remote Bomb",
-
-  "ContextMenu_ArmBomb": "Activate Pipe Bomb",
+  "ContextMenu_ArmBomb": "Activate Bomb",
+  "ContextMenu_UninstallBomb": "Uninstall Bomb",
 
   "ContextMenu_CarBombSuicide": "Activating this type of bomb will immediately kill you!"
 }

@@ -17,14 +17,14 @@ function getTableSize(t)
     return count
 end
 
-function RemoveBomb(player, vehicle)
+function RemoveBomb(player, vehicle, wasDismantled)
 	local vehicledata = vehicle:getModData()
-	local bombtype = 'Base.PipeBomb'
+	local bombType = 'Base.PipeBomb'
 
 	vehicledata.Bomb = nil
 	
 	if vehicledata.isTimed then -- remove from timed array
-		bombtype = 'Base.PipeBombTriggered'
+		bombType = 'Base.PipeBombTriggered'
 		for i=0, getTableSize(CIDTimerCars), 1 do
 			if CIDTimerCars[i] == vehicleid then
 				table.remove(CIDTimerCars, i)
@@ -36,22 +36,47 @@ function RemoveBomb(player, vehicle)
 	end
 	
 	if vehicledata.isProximity then -- remove from proximity array
-		bombtype = 'Base.PipeBombSensorV', vehicledata.isProximitySensor
+		bombType = 'Base.PipeBombSensorV' .. vehicledata.isProximitySensor
 		for i=0, getTableSize(CIDProximityCars), 1 do
 			if CIDProximityCars[i] == vehicleid then
 				table.remove(CIDProximityCars, i)
-				break;
+				break
 			end
 		end
 	end
 
 	if vehicledata.isRemote then
-		bombtype = 'Base.PipeBombRemote'
+		bombType = 'Base.PipeBombRemote'
+	end
+
+	if player then -- if player is specified, we know it's CB.UninstallingBomb timedaction
+		if wasDismantled then
+			print('wasDismantled')
+			local worldItem = nil
+			for i=0, ZombRand(3)+1, 1 do -- 1-3 electronic scrap
+				worldItem = instanceItem('Base.ElectronicsScrap')
+				player:getSquare():AddWorldInventoryItem(worldItem, ZombRand(0.1, 0.5), ZombRand(0.1, 0.5), 0)
+			end
+			if (ZombRand(0, 100)+1)/100 > 0.50 then -- random condition for pipe, if above 50% just make it a broken one, because i'm evil >:)
+				worldItem = instanceItem('Base.MetalPipe_Broken')
+				worldItem:setCondition(ZombRand((worldItem:getConditionMax()/2))+1) -- make sure the random condition is always below 50%
+				player:getSquare():AddWorldInventoryItem(worldItem, ZombRand(0.1, 0.5), ZombRand(0.1, 0.5), 0)
+			else 
+				worldItem = instanceItem('Base.MetalPipe') 
+				worldItem:setCondition(ZombRand(worldItem:getConditionMax()/2) + (worldItem:getConditionMax()/2)) -- condition always above 50%
+			end
+			return
+		else
+			local inventoryItem = instanceItem(bombType)
+			print('Granting player ', bombType)
+			player:getInventory():AddItem(inventoryItem)
+			return
+		end
 	end
 
 	if player == nil and SandboxVars.CarBombs.Ditching then -- initiate ditching, play noise and tell passengers the bomb fell off
-		local worlditem = instanceItem(bombtype)
-		vehicle:getSquare():AddWorldInventoryItem(worlditem, 0.5, 0.5, 0)
+		local worldItem = instanceItem(bombType)
+		vehicle:getSquare():AddWorldInventoryItem(worldItem, 0.5, 0.5, 0)
 		getSoundManager():PlayWorldSound("BreakMetalItem", vehicle:getSquare(), 0, 20, 5.0, true)
 
 		for i=0, vehicle:getMaxPassengers() - 1, 1 do
@@ -77,7 +102,7 @@ function ExplodeCar(player, vehicle)
 		end
 	end
 	
-	RemoveBomb(nil, vehicle)
+	RemoveBomb(nil, vehicle, false)
 
 	local fuel = vehicle:getRemainingFuelPercentage() * 0.015 -- returns 0-100 - Remaining Fuel: 98.6893814 
 	local radius = 5;
@@ -211,8 +236,6 @@ function ExplodeCar(player, vehicle)
 end
 
 function CBKillzone(vehicleid, radius)
-	
-	
 	if getWorld():getGameMode() == "Multiplayer" then
 		sendServerCommand("carbombs", "killemall", {["vehicleid"]=vehicleid,["radius"]=radius})
 	else
@@ -236,7 +259,6 @@ function CBKillzone(vehicleid, radius)
 end
 
 function CBBurnCar(player, vehicle)
-	
 	if getWorld():getGameMode() == "Multiplayer" then
 		vehicle:permanentlyRemove()
 	else

@@ -4,7 +4,7 @@
 -- GPL-3.0
 -- https://github.com/Kyekii/pz-carbombs
 --
--- v1.1 - B42 port
+-- v1.2 - B42 
 
 local CB = {}
 
@@ -43,9 +43,9 @@ function ISInventoryPaneContextMenu.OnTriggerRemoteController(remoteController, 
 end 
 
 function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
-	local world = getSaveInfo(getWorld():getWorld())
 	local player = getSpecificPlayer(playerId)
 	local inventory = player:getInventory()
+	local vehicle = ISVehicleMenu.getVehicleToInteractWith(player)
 	
 	local bombs = inventory:getAllEvalRecurse(function(item, player)
 		return item:getType() == 'PipeBomb'
@@ -66,27 +66,17 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 	local remote = inventory:getAllEvalRecurse(function(item, player)
 		return item:getType() == 'RemoteCraftedV1' or item:getType() == 'RemoteCraftedV2' or item:getType() == 'RemoteCraftedV3'
 	end, ArrayList.new())
-	
-	vehicle = ISVehicleMenu.getVehicleToInteractWith(player)
-	
-	if vehicle then
+
+	if vehicle and not player:isSeatedInVehicle() then -- prevents accessing options while in car
 		local vehiclename = vehicle:getScriptName()
 		local vehicledata = vehicle:getModData()
 		local vehicleid = vehicle:getId()
 		
-		if string.find(vehiclename, "Burnt") ~= nil then
+		if string.find(vehiclename, "Burnt") then
 			return
 		end
 		
-		if vehicledata.Bomb == true then
-			if vehicledata.isRemote == true and remote:size() > 0 then
-				for i=0, player:getInventory():getItems():size() -1 do
-					local item = player:getInventory():getItems():get(i)
-					if item:isRemoteController() and item:getRemoteControlID() == -1 then
-						context:addOption(getText("ContextMenu_AddCarTrigger"), item, CB.LinkBomb, player, vehicleid)
-					end
-				end
-			end
+		if vehicledata.Bomb then
 			if CIDTimerTick[vehicleid] ~= nil then
 				return
 			end
@@ -96,6 +86,15 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 					return
 				end
 			end
+
+			if vehicledata.isRemote == true and remote:size() > 0 then
+				for i=0, player:getInventory():getItems():size() -1 do
+					local item = player:getInventory():getItems():get(i)
+					if item:isRemoteController() and item:getRemoteControlID() == -1 then
+						context:addOption(getText("ContextMenu_AddCarTrigger"), item, CB.LinkBomb, player, vehicleid)
+					end
+				end
+			end
 			
 			local armbomb = context:addOption(getText('ContextMenu_ArmBomb'), player, CB.ActivateBomb, vehicle, time, remotelevel);
 			if vehicledata.isProximity ~= true and vehicledata.isTimed ~= true then
@@ -103,6 +102,15 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 				tooltip.description = getText("ContextMenu_CarBombSuicide");
 				armbomb.toolTip = tooltip;
 			end
+
+			if player:getPerkLevel(Perks.Electricity) < 1 or player:getPerkLevel(Perks.Mechanics) <= 0 then -- need Electricity 2 and Mechanics 1 to remove bombs, too
+				return
+			end
+
+			local uninstallbomb = context:addOption(getText("ContextMenu_UninstallBomb"), player, CB.UninstallBomb, vehicle)
+		--	local tooltip = ISWorldObjectContextMenu.addToolTip();
+		--	tooltip.description = getText("ContextMenu_CarBombSuicide");
+		--	armbomb.toolTip = tooltip;
 			return
 		end	
 		
@@ -140,7 +148,7 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 				bombSubMenu:addOption('1 minute', player, CB.AddingBomb, item, 60);
 				bombSubMenu:addOption('5 minutes', player, CB.AddingBomb, item, 300);
 			end
-		return
+			return
 		end
 	end
 	return
@@ -150,6 +158,27 @@ CB.LinkBomb = function(remote, player, vehicleid)
     if remote:getRemoteControlID() == -1 then
         remote:setRemoteControlID(vehicleid);
     end
+end
+
+function CB.UninstallBomb(player, vehicle)
+	local engineHood = nil;
+	local vehicleid = vehicle:getId()
+	
+	engineHood = vehicle:getPartById("EngineDoor");
+	if player:getVehicle() then
+		ISVehicleMenu.onExit(player)
+	end
+	
+	if engineHood then
+		ISTimedActionQueue.add(ISPathFindAction:pathToVehicleArea(player, vehicle, engineHood:getArea()))
+		if not engineHood:getDoor() or not engineHood:getInventoryItem() then
+			engineHood = nil
+		end
+	else
+		ISTimedActionQueue.add(ISPathFindAction:pathToVehicleAdjacent(playerObj, vehicle))
+	end
+	ISTimedActionQueue.add(UninstallingBomb:new(player, vehicle))
+	return
 end
 
 function ISVehicleMenu.showRadialMenu(player)
@@ -178,7 +207,7 @@ function ISVehicleMenu.showRadialMenu(player)
 	end
 end
 
-CB.AddingBomb = function(player, item, timer)
+CB.AddingBomb = function(player, item, vehicle, timer)
 	local vehicle = ISVehicleMenu.getVehicleToInteractWith(player)
 	local engineHood = nil;
 	local inventoryItems = player:getInventory():getItems()
@@ -241,7 +270,7 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 							print('velocitydelta now 3.0')
 						end
 						
-						if vehicledata.lastVelocity then
+						if vehicledata.lastVelocity then -- if the difference in last velocity vector and current velocity vector is greater than delta, crash
 							if vehicledata.lastVelocity:length() > velocityvector:length() and (vehicledata.lastVelocity:length() - velocityvector:length()) > velocitychangedelta then
 								vehicledata.bombHealth = vehicledata.bombHealth - math.ceil(vehicledata.lastVelocity:length() - velocityvector:length())
 								print('CarBombs accident! bombhealth ', vehicledata.bombHealth)
@@ -267,7 +296,8 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 										print('ditchodds ', ditchodds, 'ditchroll ', ditchroll)
 										if ditchroll <= ditchodds then
 											print('Successful ditch roll')
-											RemoveBomb(nil, vehicle)
+											RemoveBomb(nil, vehicle, false)
+											-- wip: add chance of bomb falling off and being scrapped
 										end
 									end
 								end

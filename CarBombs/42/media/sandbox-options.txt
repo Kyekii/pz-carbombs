@@ -32,6 +32,24 @@ option CarBombs.DitchingStartThreshold
 
 option CarBombs.DitchingEndThreshold
 {
-    type = double, min = 0.00, max = 1.00, default = 0.25,
+    type = double, min = 0.00, max = 1.00, default = 0.10,
     page = CarBombs, translation CarBombs_DitchingEndThreshold,
+}
+
+option CarBombs.UninstallFail
+{
+    type = boolean, default = true,
+    page = CarBombs, translation CarBombs_UninstallFail,
+}
+
+option CarBombs.UninstallSuccessChance
+{
+    type = double, min = 0.00, max = 1.00, default = 0.60,
+    page = CarBombs, translation CarBombs_UninstallSuccessRate,
+}
+
+option CarBombs.UninstallDismantleChance
+{
+    type = double, min = 0.00, max = 1.00, default = 0.30,
+    page = CarBombs, translation CarBombs_UninstallSuccessRate,
 }

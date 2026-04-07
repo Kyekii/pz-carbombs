@@ -29,8 +29,8 @@ end
 
 function PlantingBomb:perform()
 	local world = getSaveInfo(getWorld():getWorld())
-	local vehicleid = vehicle:getId()
-	local vehicledata = vehicle:getModData()
+	local vehicleid = self.vehicle:getId()
+	local vehicledata = self.vehicle:getModData()
 	
 	vehicledata.Bomb = true
 	
