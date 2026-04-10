@@ -345,7 +345,23 @@ function CBBurnCar(player, vehicle)
 	if getWorld():getGameMode() == "Multiplayer" then
 		vehicle:permanentlyRemove()
 	else
-		vehicle:setScriptName("Base.CarNormalBurnt")
+		local wreckname = FindCarWreak(vehicle)
+		local vehiclename = vehicle:getScriptName()
+		local skinindex = 0
+		
+		if wreckname == 'Base.PickupSpecialBurnt' then -- select the proper special pickup truck model
+			if vehiclename == 'Base.PickUpTruckLightsFire' then
+				skinindex = 0 
+			elseif vehiclename == 'Base.PickUpTruckLightsFossoil' then
+				skinindex = 1
+			else -- there's a ranger skin on index 3, but i couldn't get it working for some reason
+				wreckname = 'Base.PickupBurnt'
+			end
+		end
+
+		vehicle:setScriptName(wreckname)
+		vehicle:setSkinIndex(skinindex)
+		vehicle:transmitSkinIndex()
 		vehicle:scriptReloaded()
 	end
 end
