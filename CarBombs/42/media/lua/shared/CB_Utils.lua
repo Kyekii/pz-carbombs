@@ -1,3 +1,9 @@
+GameTime.setServerTimeShift(0) -- necessary to be able to use the following function
+local getTime = GameTime.getServerTime -- cache the function to save some overhead
+
+-- cache for benchmark 
+
+
 CIDTimerEnd = {} --holds target time by carid
 CIDTimerTick = {} --holds tick of timer by carid
 CIDTimerSeconds = {} --hold seconds of timer by carid
@@ -15,6 +21,48 @@ function getTableSize(t)
         count = count + 1
     end
     return count
+end
+
+function FindCarWreak(vehicle) -- returns the best matching vanilla car wreck to the vehicle's script name. should work for custom vehicles too
+	local vehiclename = vehicle:getScriptName()
+
+	local keyword_list = {
+		'ModernCar', -- handcrafted keyword list based on vanilla burnt models. i put more common vehicles first to speed this up
+		'ModernCar02',
+		'CarLights',
+		'LuxuryCar',
+		'PickUpVanLights', 
+		'PickUpVan', 
+		'PickUpTruckLights', 
+		'PickUpTruck',
+		'OffRoad',
+		'RaceCar',
+		'SUV',
+		'SmallCar', 
+		'SmallCar02',
+		'SportsCar',
+		'Taxi',
+		'Ambulance',
+		'VanSeats',
+		'VanRadio', 
+		'Van' -- 'Van' is deliberately placed last so more specific van types can take precedent, similarly to PickUpVan and PickUpTruck  
+	}
+
+	for key,value in ipairs(keyword_list) do
+		if string.match(vehiclename, value) then
+			if key == 3 then -- edge case for "CarLights", it's actually "Base.NormalCarBurntPolice"
+				return 'Base.NormalCarBurntPolice'
+			elseif key == 7 then -- edge case for "PickUpTruckLights", pickup trucks with lights are "Base.PickupSpecialBurnt" and need to have skin applied
+				return 'Base.PickupSpecialBurnt'
+			elseif key == 8 then -- edge case, pickup trucks are "Base.PickupBurnt"
+				return 'Base.PickupBurnt'
+			else
+				return 'Base.' .. value .. 'Burnt' 
+			end
+		end
+	end
+
+	return 'Base.CarNormalBurnt' -- finally, if no matches, just return the default model
 end
 
 function RemoveBomb(player, vehicle, wasDismantled)
