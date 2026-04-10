@@ -2,6 +2,13 @@ require "TimedActions/ISBaseTimedAction"
 
 UninstallingBomb = ISBaseTimedAction:derive('UninstallingBomb')
 
+function UninstallingBomb:getDuration()
+	if self.character:isTimedActionInstant() then
+        return 1
+    end
+    return 180 - (self.character:getPerkLevel(Perks.Mechanics) * 5)
+end
+
 function UninstallingBomb:isValid()
 	return true;
 end
@@ -67,10 +74,7 @@ function UninstallingBomb:new(character, vehicle)
 	o.character = character;
 	o.vehicle = vehicle;
 	o.vehicleid = vehicle:getId();
-	o.maxTime = 200;
-	if character:isTimedActionInstant() then
-		o.maxTime = 1
-	end
+	o.maxTime = o:getDuration()
 
 	return o
 end

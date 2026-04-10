@@ -2,6 +2,13 @@ require "TimedActions/ISBaseTimedAction"
 
 PlantingBomb = ISBaseTimedAction:derive('PlantingBomb')
 
+function PlantingBomb:getDuration()
+	if self.character:isTimedActionInstant() then
+        return 1
+    end
+    return 200 - (self.character:getPerkLevel(Perks.Mechanics) * 5)
+end
+
 function PlantingBomb:isValid()
 	return true
 end
@@ -84,10 +91,7 @@ function PlantingBomb:new(character, vehicle, item, timer)
 	o.item = item
 	o.vehicle = vehicle
 	o.timer = tonumber(timer)
-	o.maxTime = 200
-	if character:isTimedActionInstant() then
-		o.maxTime = 1
-	end
+	o.maxTime = o:getDuration()
 	
 	return o
 end
