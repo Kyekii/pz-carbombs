@@ -51,5 +51,5 @@ option CarBombs.UninstallSuccessChance
 option CarBombs.UninstallDismantleChance
 {
     type = double, min = 0.00, max = 1.00, default = 0.30,
-    page = CarBombs, translation CarBombs_UninstallSuccessRate,
+    page = CarBombs, translation CarBombs_UninstallDismantleRate,
 }

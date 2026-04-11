@@ -8,6 +8,7 @@
   "ContextMenu_UninstallBomb": "Uninstall Bomb",
 
   "ContextMenu_CarBombSuicide": "Activating this type of bomb will immediately kill you!",
+  "ContextMenu_CarBombSuicideMisc": "This type of bomb will immediately explode when the car is started!",
   "ContextMenu_BombStats": "Bomb Health: ",
   "ContextMenu_BombStats2": "Chance of uninstalling: ",
   "ContextMenu_BombStats3": "Chance of breaking bomb on uninstall: "
