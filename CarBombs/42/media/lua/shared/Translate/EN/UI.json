@@ -1,0 +1,6 @@
+{
+  "UI_CarBombsV1.2WarningTitle": "Car Bombs Mod Warning",
+  "UI_CarBombsV1.2WarningFull": "Car Bombs has detected that this world contains existing vehicles with planted bombs.\nThe mod has recently been updated to v1.2, and now features new features and default world settings.\nOne of these settings involves accidental bomb detonations!\nFor more information, please read the mod's workshop page.",
+  "UI_CarBombsV1.2Warning2": "Stay safe!",
+  "UI_CarBombsV1.2Warning3": "(if you see this message more than once, sorry :( please report it as a bug)"
+}

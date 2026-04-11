@@ -7,13 +7,107 @@
 -- v1.2 - B42 
 
 local CB = {}
+local CBData 
+local CBVersion = 1.2
 
 local old_ISVehicleMenu_showRadialMenu = ISVehicleMenu.showRadialMenu
+
+function CB.GetModVersion() -- this is used to keep a persistent "save value", which is only saved when the pre v1.2 warning is acknowledged
+	local reader = getFileReader("carbombs.ini", false)
+	if not reader then 
+		return 0 
+	else 
+		while true do -- kind of overkill for just reading a single line, but this keeps it future-proofed
+       		local line = reader:readLine() 
+        	if line == nil then
+           	 	reader:close()
+            	return 0
+        	end
+			line = string.trim(line)
+      	  	if line == "" then
+           	-- ignore blank line
+        	elseif luautils.stringStarts(line, 'version') then
+            	local version = string.split(line, '=')
+            	print('[CarBombs] version from file read: ' .. version[2])
+				reader:close()
+				return tonumber(version[2])
+			end
+		end
+	end
+end
+
+function CB.SetModVersion(CBVersion) -- this returns "true" or "false" depending on if the file existed before or not
+	local writer = getFileWriter("carbombs.ini", true, false)
+	local existed = true
+
+	if not writer then 
+		existed = false
+	end 
+
+	writer:write('VERSION='..CBVersion)
+	return existed
+end
+
+function CB.LegacyVehicleChecker(player, vehicle) -- check if the vehicle needs to be updated 
+	if not vehicle:getModData() then return end
+
+	local vehicledata = vehicle:getModData()
+	if vehicledata.Bomb and (SandboxVars.CarBombs.AccidentalDetonation or SandboxVars.CarBombs.Ditching) and not vehicledata.bombHealth then
+		CB.VersionWarning(player)
+		vehicledata.bombHealth = 40 
+		vehicledata.bombStartHealth = 40 
+	end
+end
+
+local function OnLoad()
+	Events.OnUseVehicle.Add(OnUseVehicle)
+	if CB.GetModVersion() < CBVersion then -- old version, mark for 1.2 warning
+		CBData.warningAcknowledged = false
+	end
+end
+
+local function OnInitGlobalModData(newGame) -- check if save has been started before. if yes, let's check for globalmoddata or sandboxvars
+	CBData = ModData.get('CarBombs')
+	if not newGame and not CBData then -- no globalmoddata, could be old version of mod. hopefully mp-compliant will check later
+    	CBData = ModData.getOrCreate('CarBombs')
+		CBData.warningAcknowledged = false
+		print('[CarBombs] Warning not acknowledged - not NewGame and CBData doesn\'t exist!')
+	else -- no need to worry about check if it's a brand new save
+		CBData.warningAcknowledged = true
+	end
+	CBData.version = CBVersion
+end
+
+local function OnUseVehicle(player, vehicle, pressedNotTapped)
+	if not isClient() then return end
+
+	local version = CB.GetModVersion()
+	if vehicle:getModData() then
+		local vehicledata = vehicle:getModData() -- check if vehicle has bomb, but no bombhealth, despite having the vars set for setting bombhealth
+		if (vehicledata.Bomb and not vehicledata.bombHealth) and SandboxVars.CarBombs.AccidentalDetonation then 
+			CB.VersionWarning(player)
+			Events.OnUseVehicle.Remove(OnUseVehicle) -- no need to check if the warning needs to be seen anymore, so we can remove this to be more performant
+		end
+	end
+end
+
+function CB.VersionWarning(player)
+	if CBData.warningAcknowledged == true then return end
+
+	local width, height = 350, 140
+	local dialog = ISCarBombWarning:new((getCore():getScreenWidth() / 2) - width / 2, (getCore():getScreenHeight() / 2) - height / 2, width, height)
 	
+	dialog:initialise()
+	dialog:addToUIManager()
+
+	CBData.warningAcknowledged = true
+	CB.SetModVersion(CBVersion)
+end
+
 function ISInventoryPaneContextMenu.OnTriggerRemoteController(remoteController, player) -- this replaces the original game's OnTriggerRemoteController. this allows for other remote mods and vanilla remotes, on top of carbombs, to function properly
 	local vehicleid = remoteController:getRemoteControlID()
 	local vehicle = getVehicleById(vehicleid)
-	
+
 	if vehicle ~= nil then
 		local vehicledata = vehicle:getModData()
 		if vehicledata ~= nil then
@@ -68,6 +162,8 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 	end, ArrayList.new())
 
 	if vehicle and not player:isSeatedInVehicle() then -- prevents accessing options while in car
+		CB.LegacyVehicleChecker(player, vehicle)
+
 		local vehiclename = vehicle:getScriptName()
 		local vehicledata = vehicle:getModData()
 		local vehicleid = vehicle:getId()
@@ -268,6 +364,10 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 					local vehicledata = vehicle:getModData()
 
 					if vehicledata.Bomb then
+					--	if vehicledata.bombHealth == nil then -- cvar set but no bombhealth? probably a pre-v1.2 bomb, fixing it now and displaying warning
+					--		vehicledata.bombHealth = 40 
+					--		vehicledata.bombStartHealth = 40
+					--	end
 						local velocityvector = Vector3f.new() -- initializes vector
 						local velocitychangedelta = 1.0 -- if the difference in last velocity vs current is greater than delta, car probably crashed
 						
@@ -410,3 +510,6 @@ end
 Events.OnFillWorldObjectContextMenu.Add(CB.OnFillWorldObjectContextMenu)
 Events.OnTick.Add(CB.BombCheck)
 Events.OnTick.Add(CB.CrashCheck)
+
+Events.OnInitGlobalModData.Add(OnInitGlobalModData)
+Events.OnLoad.Add(OnLoad)
