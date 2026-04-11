@@ -1,0 +1,21 @@
+Sandbox_EN = {
+    Sandbox_CarBombs = "Car Bombs",
+    Sandbox_CarBombs_AccidentalDetonation = "Accidental Detonation",
+    Sandbox_CarBombs_AccidentalDetonation_tooltip = "Car impacts will decrease the 'bomb's health', and upon hitting 0, the bomb will detonate.\nThe bomb health is decided by the Bomb Health variable and your Mechanics skill.",
+    Sandbox_CarBombs_AccidentalDetonationHealth = "Base Bomb Health",
+    Sandbox_CarBombs_AccidentalDetonationHealth_tooltip = "The starting health of bombs, when either Accidental Detonations or Ditching is enabled.",
+    Sandbox_CarBombs_Ditching = "Ditching",
+    Sandbox_CarBombs_Ditching_tooltip = "Car impacts below a certain speed will have a chance to eject the bomb from the vehicle.\nThe chance is determined by the car's health, the Max Chance, and the Start and End threshold.",
+    Sandbox_CarBombs_DitchingMaxChance = "Ditching Max Chance",
+    Sandbox_CarBombs_DitchingMaxChance_tooltip = "When the bomb's health is at the Ditching End Percentage, this is the chance that an impact will eject the bomb.",
+    Sandbox_CarBombs_DitchingStartThreshold = "Ditching Start Percentage",
+    Sandbox_CarBombs_DitchingStartThreshold_tooltip = "When the bomb's health is at this percentage, the chance for Ditching to occur will slowly and linearly increase towards the maximum.",
+    Sandbox_CarBombs_DitchingEndThreshold = "Ditching End Percentage",
+    Sandbox_CarBombs_DitchingEndThreshold_tooltip = When the bomb's health is at this percentage, the chance for Ditching to occur will be at its maximum.",
+    Sandbox_CarBombs_UninstallFail = "Uninstall Failure",
+    Sandbox_CarBombs_UninstallFail_tooltip = If enabled, there will be a chance for your character's uninstall to be unsuccessful, or accidentally dismantle the bomb.\nThe chance is defined by Success and Dismantle rate, and is influenced by your Electronics skill.",
+    Sandbox_CarBombs_UninstallSuccessRate = "Uninstall Base Chance",
+    Sandbox_CarBombs_UninstallSuccessRate_tooltip = "The chance that your character will successfully uninstall the bomb.\nThis is influenced by your Electronics skill.",
+    Sandbox_CarBombs_UninstallDismantleRate = "Uninstall Dismantle Chance",
+    Sandbox_CarBombs_UninstallDismantleRate_tooltip = "On a successful uninstallation roll, this is the chance that the uninstallation will result in a broken pipe bomb.\nThis is influenced by your Electronics skill.\nIf you want this turned off, simply set the percentage to 0."
+}
