@@ -20,6 +20,16 @@ module CarBombs {
         }
     }
 
+    sound UninstallingBomb
+    {
+        category = World, loop = true, is3D = true,
+        clip
+        {
+            file = media/sound/UninstallingBomb.wav,
+            distanceMax = 20,
+        }
+    }
+
     sound ExplodeBomb
     {
         category = World, loop = false, is3D = true,
