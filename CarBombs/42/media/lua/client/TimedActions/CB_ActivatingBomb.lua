@@ -19,10 +19,16 @@ end
 function ActivatingBomb:start()
 	self:setActionAnim("ExamineVehicle")
 	self:setOverrideHandModels(nil, nil)
-	self.character:getEmitter():playSound("ActivatingBomb")
+	-- self.character:getEmitter():playSound("ActivatingBomb")
+	self.sound = self.character:getEmitter():playSound("ActivatingBomb")
+	addSound(self.character, self.character:getX(), self.character:getY(), self.character:getZ(), 10, 1)
 end
 
 function ActivatingBomb:perform()
+	if self.sound ~= 0 and self.character:getEmitter():isPlaying(self.sound) then
+        self.character:getEmitter():stopSound(self.sound);
+    end
+
 	local vehicledata = self.vehicle:getModData();
 	if vehicledata.isTimed == true then
 		table.insert(CIDTimerCars, self.vehicleid)
@@ -63,14 +69,15 @@ function ActivatingBomb:perform()
 	ISBaseTimedAction.perform(self)
 end
 
---[[ function ActivatingBomb:stop()
+function ActivatingBomb:stop()
 	if self ~= nil then
-		self.item:setJobDelta(0.0);
-		ISBaseTimedAction:stop(self)
+		ISBaseTimedAction.stop(self)
 	end
-	return
+
+	if self.sound ~= 0 and self.character:getEmitter():isPlaying(self.sound) then
+        self.character:getEmitter():stopSound(self.sound);
+    end
 end
-]]--
 
 function ActivatingBomb:new(character, vehicle, time, remotelevel)
 	local o = {};

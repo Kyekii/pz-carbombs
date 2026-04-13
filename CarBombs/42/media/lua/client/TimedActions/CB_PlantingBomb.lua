@@ -24,17 +24,26 @@ function PlantingBomb:waitToStart()
 end
 
 function PlantingBomb:start()
-	self:setActionAnim("ExamineVehicle")
+	self:setActionAnim("VehicleWorkOnTire")
 	self:setOverrideHandModels(nil, nil)
-	self.character:getEmitter():playSound("PlantingBomb")
+	self.sound = self.character:getEmitter():playSound("PlantingBomb")
+	addSound(self.character, self.character:getX(), self.character:getY(), self.character:getZ(), 10, 1)
 end
 
 function PlantingBomb:stop()
+	ISBaseTimedAction.stop(self)
 	self.item:setJobDelta(0.0)
-	ISBaseTimedAction:stop(self)
+
+	if self.sound ~= 0 and self.character:getEmitter():isPlaying(self.sound) then
+        self.character:getEmitter():stopSound(self.sound);
+    end
 end
 
 function PlantingBomb:perform()
+	if self.sound ~= 0 and self.character:getEmitter():isPlaying(self.sound) then
+        self.character:getEmitter():stopSound(self.sound);
+    end
+
 	local world = getSaveInfo(getWorld():getWorld())
 	local vehicleid = self.vehicle:getId()
 	local vehicledata = self.vehicle:getModData()
@@ -78,7 +87,6 @@ function PlantingBomb:perform()
 	self.character:getInventory():Remove(self.item)
 	--FinishTimeBasedAction
 	ISBaseTimedAction.perform(self)
-	
 	self.character:Say(getText("IGUI_BombSet"))
 end
 

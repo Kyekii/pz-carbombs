@@ -24,12 +24,26 @@ function UninstallingBomb:waitToStart() -- Wait until return false
 end
 
 function UninstallingBomb:start()
-	self:setActionAnim("ExamineVehicle")
+	self:setActionAnim("VehicleWorkOnTire")
 	self:setOverrideHandModels(nil, nil)
-	self.character:getEmitter():playSound("UninstallingBomb")
+	-- self.character:getEmitter():playSound("UninstallingBomb")
+	self.sound = self.character:getEmitter():playSound("UninstallingBomb")
+	addSound(self.character, self.character:getX(), self.character:getY(), self.character:getZ(), 10, 1)
+end
+
+function UninstallingBomb:stop()
+	ISBaseTimedAction.stop(self)
+
+	if self.sound ~= 0 and self.character:getEmitter():isPlaying(self.sound) then
+        self.character:getEmitter():stopSound(self.sound);
+    end
 end
 
 function UninstallingBomb:perform()
+	if self.sound ~= 0 and self.character:getEmitter():isPlaying(self.sound) then
+        self.character:getEmitter():stopSound(self.sound);
+    end
+
 	if SandboxVars.CarBombs.UninstallFail then
 		local successchance, dismantlechance = GetUninstallChance(self.character)
 
@@ -64,7 +78,6 @@ function UninstallingBomb:perform()
 
 	ISBaseTimedAction.perform(self)
 end
-
 
 function UninstallingBomb:new(character, vehicle)
 	local o = {};
