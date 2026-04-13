@@ -287,7 +287,8 @@ function ExplodeCar(player, vehicle)
 	print('number of secondary fires: ', numFires)
 
 	if getWorld():getGameMode() ~= "Multiplayer" then
-		getSoundManager():PlayWorldSound("ExplodeBomb", vehicle:getSquare(), 0, 600, 1, true)
+		local emitter = vehicle:getEmitter()
+		emitter:playSound('ExplodeBomb', vehicle:getX(), vehicle:getY(), vehicle:getZ())
 	end
 
 	local distance = math.floor(radius/2) 

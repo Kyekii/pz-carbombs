@@ -1,0 +1,33 @@
+module CarBombs {
+
+    sound ActivatingBomb
+    {
+        category = World, loop = false, is3D = true,
+        clip
+        {
+            file = media/sound/ActivatingBomb.wav,
+            distanceMax = 20,
+        }
+    }
+
+    sound PlantingBomb
+    {
+        category = World, loop = false, is3D = true,
+        clip
+        {
+            file = media/sound/PlantingBomb.wav,
+            distanceMax = 20,
+        }
+    }
+
+    sound ExplodeBomb
+    {
+        category = World, loop = false, is3D = true,
+        clip
+        {
+            file = media/sound/ExplodeBomb.wav,
+            distanceMax = 250,
+        }
+    }
+
+}
