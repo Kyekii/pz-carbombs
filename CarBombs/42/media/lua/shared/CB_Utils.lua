@@ -187,12 +187,9 @@ function ExplodeCar(player, vehicle)
 	
 	RemoveBomb(nil, vehicle, false)
 
-
-	local fuel = vehicle:getRemainingFuelPercentage() * 0.015 -- returns 0-100 - Remaining Fuel: 98.6893814 
 	local radius = 5;
-	radius = math.floor(radius*fuel)
-	if radius < 5 then
-		radius = 5
+	if vehicle:getRemainingFuelPercentage() > 50 and not NaN then -- this will return NaN if there is no fuel tank
+		radius = math.floor(radius + (vehicle:getRemainingFuelPercentage() * 0.025))
 	end
 	
 	local vehiclecontainer = vsquare:getVehicleContainer()
