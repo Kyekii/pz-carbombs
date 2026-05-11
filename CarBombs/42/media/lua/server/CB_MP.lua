@@ -24,7 +24,7 @@ function OnServerCommand(module, command, args)
 		end
 		
 		for k,v in ipairs(objects) do
-			if (vehicle:DistTo(v) < radius) and (v:isCharacter() or v:isZombie()) then
+			if (vehicle:DistTo(v) < args.radius) and (v:isCharacter() or v:isZombie()) then
 				if not v:isZombie() and v:getBodyDamage():isInfected() then -- disable coming back as a zombie via car explosion (for obvious reasons)
 					local body = v:getBodyDamage()
 					body:setInfected(false)
