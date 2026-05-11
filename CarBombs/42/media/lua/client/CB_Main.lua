@@ -207,14 +207,25 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 			if SandboxVars.CarBombs.AccidentalDetonation then
 				local successchance, dismantlechance = GetUninstallChance(player)
 				uninstallbomb.toolTip = ISWorldObjectContextMenu.addToolTip()
-				
+				local bombtype = 'Item_PipeBomb'
+				if vehicledata.isProximity or vehicledata.isTimed or vehicledata.isRemote then
+					bombtype = 'Item_PipeBombTimer'
+				end
+
+				local healthcolor = '<GREEN>'
+				if (SandboxVars.CarBombs.DitchingStartThreshold * vehicledata.bombStartHealth) >= vehicledata.bombHealth then
+					healthcolor = '<ORANGE>'
+				elseif (SandboxVars.CarBombs.DitchingEndThreshold * vehicledata.bombStartHealth) >= vehicledata.bombHealth then
+					healthcolor = '<RED>'
+				end
+
 			--	uninstallbomb.toolTip:setName(getText('ContextMenu_BombStats') .. vehicledata.bombHealth .. '/' .. vehicledata.bombStartHealth)
-				local bombdescription = '<SIZE:large>' .. getText('ContextMenu_BombStats') .. 
-					vehicledata.bombHealth .. '/' .. vehicledata.bombStartHealth .. '\n'
-				
+				local bombdescription = '<SIZE:large><IMAGE:' .. bombtype .. ',32,32>' .. getText('ContextMenu_BombStats') .. '<SPACE>' ..
+					healthcolor .. vehicledata.bombHealth .. '/' .. vehicledata.bombStartHealth .. '\n'
+					
 				if SandboxVars.CarBombs.UninstallFail then
-					bombdescription = bombdescription .. '<SIZE:small>' ..
-						'\n' .. getText('ContextMenu_BombStats2') .. '\n' .. successchance * 100 .. '%' ..
+					bombdescription = bombdescription .. '<RGB:255,255,255><SIZE:small>' ..
+						getText('ContextMenu_BombStats2') .. '\n' .. successchance * 100 .. '%' ..
 						'\n' .. getText('ContextMenu_BombStats3') .. '\n' .. dismantlechance * 100 .. '%'
 				end
 				uninstallbomb.toolTip.description = bombdescription
@@ -401,7 +412,7 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 										local ditchodds = (1 - (vehicledata.bombHealth)/(SandboxVars.CarBombs.DitchingStartThreshold * vehicledata.bombStartHealth))
 										local ditchroll = ZombRandFloat(0.00, 1.00)
 
-										if SandboxVars.CarBombs.DitchingEndThreshold * vehicledata.bombStartHealth >= vehicledata.bombHealth then
+										if (SandboxVars.CarBombs.DitchingEndThreshold * vehicledata.bombStartHealth) >= vehicledata.bombHealth then
 											ditchodds = SandboxVars.CarBombs.DitchingMaxChance
 										end
 
