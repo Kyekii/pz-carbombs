@@ -187,6 +187,7 @@ function ExplodeCar(player, vehicle)
 	
 	RemoveBomb(nil, vehicle, false)
 
+
 	local fuel = vehicle:getRemainingFuelPercentage() * 0.015 -- returns 0-100 - Remaining Fuel: 98.6893814 
 	local radius = 5;
 	radius = math.floor(radius*fuel)
@@ -217,6 +218,9 @@ function ExplodeCar(player, vehicle)
 			end	
 			if container:getItemCount("PropaneTank") > 0 then
 				flammablecount = flammablecount + containerarray[i]:getItemCount("PropaneTank")
+			end
+			if container:getItemCount("Fertilizer") > 0 then
+				flammablecount = flammablecount + containerarray[i]:getItemCount("Fertilizer")
 			end	
 		end
 	end
@@ -231,6 +235,10 @@ function ExplodeCar(player, vehicle)
 			return item:getType() == 'PropaneTank'
 		end, ArrayList.new())
 		
+		local fertilizer = container:getAllEvalRecurse(function(item)
+			return item:getType() == 'Fertilizer'
+		end, ArrayList.new())
+
 		if gas:size() > 0 then
 			for i=0, gas:size()-1, 1 do
 				if gas:get(i) then
@@ -252,12 +260,28 @@ function ExplodeCar(player, vehicle)
 				end
 			end  
 		end
+
+		if fertilizer:size() > 0 then
+			for i=0, fertilizer:size()-1, 1 do
+				if fertilizer:get(i) then
+					local fertilizer = fertilizer:get(i)
+					table.insert(flammablearray, fertilizer)
+				end
+			end  
+		end
 	end
 	
 	for i=1, getTableSize(flammablearray), 1 do -- add all propane tanks/gas can deltas
 		local flammableitem = flammablearray[i]
 		local fluidcontainer = flammableitem:getFluidContainer()
-		if fluidcontainer == nil then -- propane tanks are still "DrainableComboItem" as opposed to "ComboItem" in b42.10, which handles liquids differently from the new system
+		if flammableitem:getType() == 'Fertilizer' then
+			local delta = math.ceil(flammableitem:getCurrentUsesFloat() / flammableitem:getUseDelta())
+			if delta > 5 then 
+				flammablemultiplier = flammablemultiplier + 0.5
+			elseif delta > 2 then
+				flammablemultiplier = flammablemultiplier + 0.25
+			end
+		elseif flammableitem:getType() == 'PropaneTank' then -- propane tanks are still "DrainableComboItem" as opposed to "ComboItem" in b42.10, which handles liquids differently from the new system
 			flammablemultiplier = flammablemultiplier + flammableitem:getUseDelta()
 		else
 			local fluid = fluidcontainer:getPrimaryFluid()
@@ -282,6 +306,7 @@ function ExplodeCar(player, vehicle)
 	radius = math.floor(radius*flammablemultiplier) -- final radius
 	local numFires = math.floor((((radius^2)*9)-radius^2)*0.02)
 
+	print('Flammable count: ', flammablecount)
 	print('Flammable Multiplier ', flammablemultiplier)
 	print('explosion radius: ', radius)
 	print('number of secondary fires: ', numFires)
