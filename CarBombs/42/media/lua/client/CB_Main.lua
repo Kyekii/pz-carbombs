@@ -257,11 +257,13 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 				
 				context:addSubMenu(bombOption, bombSubMenu)
 				
-			--	context:addOption(getText('ContextMenu_AddTimeBomb'), player, CB.AddingBomb, player, item, item);
 				bombSubMenu:addOption('10 seconds', player, CB.AddingBomb, item, 10);
 				bombSubMenu:addOption('30 seconds', player, CB.AddingBomb, item, 30);
 				bombSubMenu:addOption('1 minute', player, CB.AddingBomb, item, 60);
-				bombSubMenu:addOption('5 minutes', player, CB.AddingBomb, item, 300);
+			--	bombSubMenu:addOption('5 minutes', player, CB.AddingBomb, item, 300);
+
+			--  while i think it would be fun to have a 5-minute bomb action, pz just has no meaningful capacity for this system to work due to unloading the car's chunk once the player gets far enough. 
+			--	this could theoretically work in niche cases, like mp, but i have a feeling the 5-minute option isn't ever really used either way.
 			end
 			return
 		end
