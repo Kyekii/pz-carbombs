@@ -2,8 +2,8 @@ name=CarBombs
 poster=poster.png
 versionMin=42.0.0
 modversion=1.2
-icon=vyvian.png
-author=vyvian
+icon=kyeki.png
+author=Kyeki
 id=CarBombs
 
 description=Rig pipe bombs to vehicles for a destructive, deadly boom
