@@ -1,4 +1,4 @@
-require "TimedActions/ISBaseTimedAction"
+require 'TimedActions/ISBaseTimedAction'
 
 UninstallingBomb = ISBaseTimedAction:derive('UninstallingBomb')
 
@@ -24,10 +24,10 @@ function UninstallingBomb:waitToStart() -- Wait until return false
 end
 
 function UninstallingBomb:start()
-	self:setActionAnim("VehicleWorkOnTire")
+	self:setActionAnim('VehicleWorkOnTire')
 	self:setOverrideHandModels(nil, nil)
-	-- self.character:getEmitter():playSound("UninstallingBomb")
-	self.sound = self.character:getEmitter():playSound("UninstallingBomb")
+	self.sound = self.character:getEmitter():playSound('UninstallingBomb')
+
 	addSound(self.character, self.character:getX(), self.character:getY(), self.character:getZ(), 10, 1)
 end
 
@@ -46,33 +46,31 @@ function UninstallingBomb:perform()
 
 	if SandboxVars.CarBombs.UninstallFail then
 		local successchance, dismantlechance = GetUninstallChance(self.character)
-
 		local roll = (ZombRand(0, 100)+1)/100 -- first roll to determine if you actually took the bomb off or not
-		print('SuccessRoll: ', roll, ' >= ', successchance)
+
 		if roll >= successchance then
 			roll = (ZombRand(0, 100)+1)/100 -- second roll to determine if you dismantled the bomb, instead of recovering it
-			print('DismantleRoll: ', roll, ' <= ', dismantlechance)
 			if roll <= dismantlechance then
 				RemoveBomb(self.character, self.vehicle, true, false)
-				self.character:getEmitter():playSound("BreakMetalItem")
-				self.character:Say(getText("IGUI_BombUninstallDismantle"))
+				self.character:getEmitter():playSound('BreakMetalItem')
+				self.character:Say(getText('IGUI_BombUninstallDismantle'))
 				return
 			else
 				RemoveBomb(self.character, self.vehicle, false, false)
-				self.character:Say(getText("IGUI_BombUninstallSuccess"))
+				self.character:Say(getText('IGUI_BombUninstallSuccess'))
 				return
 			end
 		else
-			self.character:Say(getText("IGUI_BombUninstallFail"))
+			self.character:Say(getText('IGUI_BombUninstallFail'))
 			return
 		end
 	else
 		RemoveBomb(self.character, self.vehicle, false, false)
-		self.character:Say(getText("IGUI_BombUninstallSuccess"))
+		self.character:Say(getText('IGUI_BombUninstallSuccess'))
 		return
 	end
-	
-	if self == nil then 
+
+	if self == nil then
 		return
 	end
 

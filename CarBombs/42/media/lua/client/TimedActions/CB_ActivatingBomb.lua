@@ -1,4 +1,4 @@
-require "TimedActions/ISBaseTimedAction"
+require 'TimedActions/ISBaseTimedAction'
 
 ActivatingBomb = ISBaseTimedAction:derive('ActivatingBomb')
 
@@ -17,10 +17,9 @@ function ActivatingBomb:waitToStart() -- Wait until return false
 end
 
 function ActivatingBomb:start()
-	self:setActionAnim("ExamineVehicle")
+	self:setActionAnim('ExamineVehicle')
 	self:setOverrideHandModels(nil, nil)
-	-- self.character:getEmitter():playSound("ActivatingBomb")
-	self.sound = self.character:getEmitter():playSound("ActivatingBomb")
+	self.sound = self.character:getEmitter():playSound('ActivatingBomb')
 	addSound(self.character, self.character:getX(), self.character:getY(), self.character:getZ(), 10, 1)
 end
 
@@ -35,12 +34,12 @@ function ActivatingBomb:perform()
 		CIDTimerEnd[self.vehicleid] = tonumber(vehicledata.isTimedLength)
 		CIDTimerTick[self.vehicleid] = 0
 		CIDTimerSeconds[self.vehicleid] = 0
-		self.character:Say(getText("IGUI_BombTimerArm"))
+		self.character:Say(getText('IGUI_BombTimerArm'))
 		CIDPlayerActivated[self.vehicleid] = self.character
 		return
 	elseif vehicledata.isProximity == true then
 		table.insert(CIDProximityCars, self.vehicleid)
-		self.character:Say(getText("IGUI_BombProxArm"))
+		self.character:Say(getText('IGUI_BombProxArm'))
 		CIDPlayerActivated[vehicleid] = self.character
 		return
 	elseif vehicledata.isRemote == true and self.remotelevel ~= nil then
@@ -53,19 +52,19 @@ function ActivatingBomb:perform()
 			return
 		end
 	end
-	
-	if getWorld():getGameMode() == "Multiplayer" then
+
+	if getWorld():getGameMode() == 'Multiplayer' then
 		if isClient then
-			sendClientCommand(self.character, "carbombs", "detonate", {["vehicleid"]=self.vehicleid})
+			sendClientCommand(self.character, 'carbombs', 'detonate', {['vehicleid'] = self.vehicleid})
 		end
 	else
 		ExplodeCar(self.character, self.vehicle)
 	end
 
-	if self == nil then 
+	if self == nil then
 		return
 	end
-	--FinishTimeBasedAction
+
 	ISBaseTimedAction.perform(self)
 end
 

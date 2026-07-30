@@ -1,6 +1,6 @@
-require "ISUI/ISPanel"
+require 'ISUI/ISPanel'
 
-ISCarBombWarning = ISPanel:derive("ISCarBombWarning")
+ISCarBombWarning = ISPanel:derive('ISCarBombWarning')
 
 local FONT_HGT_SMALL = getTextManager():getFontHeight(UIFont.Small)
 local FONT_HGT_MEDIUM = getTextManager():getFontHeight(UIFont.Medium)
@@ -32,12 +32,10 @@ function ISCarBombWarning:createChildren()
     self.title:instantiate();
     self:addChild(self.title);
 
-  --  y = y + FONT_HGT_MEDIUM + UI_BORDER_SPACING;
-
     y = y + panelY + UI_BORDER_SPACING+1;
 
-    self.accept = ISButton:new(10, y, btnWid, BUTTON_HGT, getText("UI_Ok"), self, ISCarBombWarning.onOptionMouseDown);
-    self.accept.internal = "ACCEPT";
+    self.accept = ISButton:new(10, y, btnWid, BUTTON_HGT, getText('UI_Ok'), self, ISCarBombWarning.onOptionMouseDown);
+    self.accept.internal = 'ACCEPT';
     self.accept:initialise()
     self.accept:instantiate()
     self.accept:enableAcceptColor()
@@ -49,8 +47,6 @@ function ISCarBombWarning:createChildren()
 
     self:setWidth(w);
     self:setHeight(y);
-    --   self:setWidth('650');
-    --   self:setHeight('300');
 
     local textW = getTextManager():MeasureStringX(UIFont.Medium, self.titleText);
     local textX = (w/2) - (textW/2);
@@ -65,12 +61,9 @@ function ISCarBombWarning:createChildren()
     self.warningLabel = ISLabel:new(textX, y, FONT_HGT_SMALL, self.warningLabelText, 1, 1, 1, 1, UIFont.Small, true)
     self:addChild(self.warningLabel)
 
-    -- old y: 2*(UI_BORDER_SPACING + FONT_HGT_MEDIUM)
-    -- y = y + BUTTON_HGT + 3*(UI_BORDER_SPACING+1);
     y = y + 2*(UI_BORDER_SPACING + FONT_HGT_MEDIUM)
 
     textW = getTextManager():MeasureStringX(UIFont.Small, self.warningLabelText2);
---    textX = (w/2) - (textW/2);
     local warningLabelText2 = getText('UI_CarBombsV1.2Warning2');
     self.warningLabelText2 = getText('UI_CarBombsV1.2Warning2');
     self.warningLabel2 = ISLabel:new(textX, y, FONT_HGT_SMALL, self.warningLabelText2, 1, 1, 1, 1, UIFont.Small, true)
@@ -79,7 +72,6 @@ function ISCarBombWarning:createChildren()
     y = y + BUTTON_HGT + 3*(UI_BORDER_SPACING+1);
 
     textW = getTextManager():MeasureStringX(UIFont.Small, self.warningLabelText3);
---    textX = (w/2) - (textW/2);
     local warningLabelText3 = getText('UI_CarBombsV1.2Warning3');
     self.warningLabelText3 = getText('UI_CarBombsV1.2Warning3');
     self.warningLabel3 = ISLabel:new(textX, y, FONT_HGT_SMALL, self.warningLabelText3, 1, 1, 1, 1, UIFont.Small, true)
@@ -87,7 +79,7 @@ function ISCarBombWarning:createChildren()
 end
 
 function ISCarBombWarning:onOptionMouseDown(button, x, y)
-    if button.internal == "ACCEPT" then
+    if button.internal == 'ACCEPT' then
         self:setVisible(false);
         self:removeFromUIManager();
     end

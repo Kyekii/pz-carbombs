@@ -4,27 +4,27 @@
 -- GPL-3.0
 -- https://github.com/Kyekii/pz-carbombs
 --
--- v1.2 - B42 
+-- v1.2 - B42
 
-local CB = {}
-local CBData 
+local CBData
 local CBVersion = 1.2
 
 local old_ISVehicleMenu_showRadialMenu = ISVehicleMenu.showRadialMenu
 
-function CB.GetModVersion() -- this is used to keep a persistent "save value", which is only saved when the pre v1.2 warning is acknowledged
-	local reader = getFileReader("carbombs.ini", false)
-	if not reader then 
-		return 0 
-	else 
+function CBGetModVersion() -- this is used to keep a persistent "save value", which is only saved when the pre v1.2 warning is acknowledged
+	local reader = getFileReader('carbombs.ini', false)
+
+	if not reader then
+		return 0
+	else
 		while true do -- kind of overkill for just reading a single line, but this keeps it future-proofed
-       		local line = reader:readLine() 
+       		local line = reader:readLine()
         	if line == nil then
            	 	reader:close()
             	return 0
         	end
 			line = string.trim(line)
-      	  	if line == "" then
+      	  	if line == '' then
            	-- ignore blank line
         	elseif luautils.stringStarts(line, 'version') then
             	local version = string.split(line, '=')
@@ -36,34 +36,34 @@ function CB.GetModVersion() -- this is used to keep a persistent "save value", w
 	end
 end
 
-function CB.SetModVersion(CBVersion) -- this returns "true" or "false" depending on if the file existed before or not
-	local writer = getFileWriter("carbombs.ini", true, false)
+function CBSetModVersion(CBVersion) -- this returns "true" or "false" depending on if the file existed before or not
+	local writer = getFileWriter('carbombs.ini', true, false)
 	local existed = true
 
-	if not writer then 
+	if not writer then
 		existed = false
-	end 
+	end
 
 	writer:write('VERSION='..CBVersion)
 	return existed
 end
 
-function CB.LegacyVehicleChecker(player, vehicle) -- check if the vehicle needs to be updated from pre-v1.2
+function CBLegacyVehicleChecker(player, vehicle) -- check if the vehicle needs to be updated from pre-v1.2
 	if not vehicle:getModData() then return end
 
 	local vehicledata = vehicle:getModData()
 	if vehicledata.Bomb and (SandboxVars.CarBombs.AccidentalDetonation or SandboxVars.CarBombs.Ditching) and not vehicledata.bombHealth then
-		CB.VersionWarning(player)
-		vehicledata.bombHealth = 40 
-		vehicledata.bombStartHealth = 40 
+		CBVersionWarning(player)
+		vehicledata.bombHealth = 40
+		vehicledata.bombStartHealth = 40
 	end
 end
 
 local function OnLoad()
 	Events.OnUseVehicle.Add(OnUseVehicle)
 	CBData = ModData.get('CarBombs')
-	
-	if CB.GetModVersion() < CBVersion then -- old version, mark for v1.2 warning
+
+	if CBGetModVersion() < CBVersion then -- old version, mark for v1.2 warning
 		CBData.warningAcknowledged = false
 	end
 end
@@ -78,7 +78,7 @@ local function OnInitGlobalModData(newGame) -- check if save has been started be
 		print('[CarBombs] newGame and no CBData. No warning necessary.')
 		CBData = ModData.getOrCreate('CarBombs')
 		CBData.warningAcknowledged = true
-		CB.SetModVersion(CBVersion) -- write file
+		CBSetModVersion(CBVersion) -- write file
 	end
 	CBData.version = CBVersion
 end
@@ -86,27 +86,26 @@ end
 local function OnUseVehicle(player, vehicle, pressedNotTapped)
 	if not isClient() then return end
 
-	local version = CB.GetModVersion()
+	local version = CBGetModVersion()
 	if vehicle:getModData() then
 		local vehicledata = vehicle:getModData() -- check if vehicle has bomb, but no bombhealth, despite having the vars set for setting bombhealth
-		if (vehicledata.Bomb and not vehicledata.bombHealth) and SandboxVars.CarBombs.AccidentalDetonation then 
-			CB.VersionWarning(player)
+		if (vehicledata.Bomb and not vehicledata.bombHealth) and SandboxVars.CarBombs.AccidentalDetonation then
+			CBVersionWarning(player)
 			Events.OnUseVehicle.Remove(OnUseVehicle) -- no need to check if the warning needs to be seen anymore, so we can remove this to be more performant
 		end
 	end
 end
 
-function CB.VersionWarning(player)
+function CBVersionWarning(player)
 	if CBData.warningAcknowledged == true then return end
+	CBData.warningAcknowledged = true
 
 	local width, height = 350, 140
 	local dialog = ISCarBombWarning:new((getCore():getScreenWidth() / 2) - width / 2, (getCore():getScreenHeight() / 2) - height / 2, width, height)
-	
+
 	dialog:initialise()
 	dialog:addToUIManager()
-
-	CBData.warningAcknowledged = true
-	CB.SetModVersion(CBVersion)
+	CBSetModVersion(CBVersion)
 end
 
 function ISInventoryPaneContextMenu.OnTriggerRemoteController(remoteController, player) -- this replaces the original game's OnTriggerRemoteController. this allows for other remote mods and vanilla remotes, on top of carbombs, to function properly
@@ -121,7 +120,7 @@ function ISInventoryPaneContextMenu.OnTriggerRemoteController(remoteController, 
 				local remotelevel = remoteController:getRemoteRange()
 				local container = remoteController:getContainer()
 				local player = container:getCharacter()
-					
+
 				if remotelevel == 7 then
 					remotelevel = 1
 				elseif remotelevel == 11 then
@@ -130,85 +129,78 @@ function ISInventoryPaneContextMenu.OnTriggerRemoteController(remoteController, 
 					remotelevel = 3
 				end
 
-				CB.ActivateBomb(player, vehicle, nil, remotelevel)
+				CBActivateBomb(player, vehicle, nil, remotelevel)
 				return
-			end 
+			end
 		end
-	else 
+	else
 		local playerObj = getSpecificPlayer(player);
-		local args = { id=remoteController:getRemoteControlID(), range=remoteController:getRemoteRange() }
+		local args = {id = remoteController:getRemoteControlID(), range = remoteController:getRemoteRange()}
 		sendClientCommand(playerObj, 'object', 'triggerRemote', args)
 	end
-end 
+end
 
-function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
+function CBOnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 	local player = getSpecificPlayer(playerId)
 	local inventory = player:getInventory()
 	local vehicle = ISVehicleMenu.getVehicleToInteractWith(player)
-	
+
 	local bombs = inventory:getAllEvalRecurse(function(item, player)
 		return item:getType() == 'PipeBomb'
 	end, ArrayList.new())
-	
+
 	local remotebombs = inventory:getAllEvalRecurse(function(item, player)
 		return item:getType() == 'PipeBombRemote'
 	end, ArrayList.new())
-	
+
 	local proximitybombs = inventory:getAllEvalRecurse(function(item, player)
 		return item:getType() == 'PipeBombSensorV1' or item:getType() == 'PipeBombSensorV2' or item:getType() == 'PipeBombSensorV3'
 	end, ArrayList.new())
-	
+
 	local timebombs = inventory:getAllEvalRecurse(function(item, player)
 		return item:getType() == 'PipeBombTriggered'
 	end, ArrayList.new())
-	
+
 	local remote = inventory:getAllEvalRecurse(function(item, player)
 		return item:getType() == 'RemoteCraftedV1' or item:getType() == 'RemoteCraftedV2' or item:getType() == 'RemoteCraftedV3'
 	end, ArrayList.new())
 
 	if vehicle and not player:isSeatedInVehicle() then -- prevents accessing options while in car
-		CB.LegacyVehicleChecker(player, vehicle)
-
 		local vehiclename = vehicle:getScriptName()
 		local vehicledata = vehicle:getModData()
 		local vehicleid = vehicle:getId()
-		
-		if string.find(vehiclename, "Burnt") then
-			return
-		end
-		
-		if player:getPerkLevel(Perks.Electricity) < 1 or player:getPerkLevel(Perks.Mechanics) <= 0 then -- players must be Electricity 2 and Mechanics 1 to add/remove bombs
-			return
-		end
+
+		CBLegacyVehicleChecker(player, vehicle)
+
+		if string.find(vehiclename, 'Burnt') then return end
+
+		-- players must be Electricity 2 and Mechanics 1 to add/remove bombs
+		if player:getPerkLevel(Perks.Electricity) < 1 or player:getPerkLevel(Perks.Mechanics) <= 0 then return end
 
 		if vehicledata.Bomb then
-			if CIDTimerTick[vehicleid] ~= nil then
-				return
-			end
-			
+			if CIDTimerTick[vehicleid] ~= nil then return end
+
 			for i=0, getTableSize(CIDProximityCars), 1 do
-				if CIDProximityCars[i] == vehicleid then
-					return
-				end
+				if CIDProximityCars[i] == vehicleid then return end -- bomb's proximity fuse is activated
 			end
 
 			if vehicledata.isRemote == true and remote:size() > 0 then
 				for i=0, player:getInventory():getItems():size() -1 do
 					local item = player:getInventory():getItems():get(i)
 					if item:isRemoteController() and item:getRemoteControlID() == -1 then
-						context:addOption(getText("ContextMenu_AddCarTrigger"), item, CB.LinkBomb, player, vehicleid)
+						context:addOption(getText('ContextMenu_AddCarTrigger'), item, CBLinkBomb, player, vehicleid)
 					end
 				end
 			end
-			
-			local armbomb = context:addOption(getText('ContextMenu_ArmBomb'), player, CB.ActivateBomb, vehicle, time, remotelevel);
+
+			local armbomb = context:addOption(getText('ContextMenu_ArmBomb'), player, CBActivateBomb, vehicle, time, remotelevel);
 			if vehicledata.isProximity ~= true and vehicledata.isTimed ~= true then
 				local tooltip = ISWorldObjectContextMenu.addToolTip();
-				tooltip.description = getText("ContextMenu_CarBombSuicide");
+				tooltip.description = getText('ContextMenu_CarBombSuicide');
 				armbomb.toolTip = tooltip;
 			end
 
-			local uninstallbomb = context:addOption(getText("ContextMenu_UninstallBomb"), player, CB.UninstallBomb, vehicle)
+			local uninstallbomb = context:addOption(getText('ContextMenu_UninstallBomb'), player, CBUninstallBomb, vehicle)
 			if SandboxVars.CarBombs.AccidentalDetonation then
 				local successchance, dismantlechance = GetUninstallChance(player)
 				uninstallbomb.toolTip = ISWorldObjectContextMenu.addToolTip()
@@ -224,10 +216,9 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 					healthcolor = '<RED>'
 				end
 
-			--	uninstallbomb.toolTip:setName(getText('ContextMenu_BombStats') .. vehicledata.bombHealth .. '/' .. vehicledata.bombStartHealth)
 				local bombdescription = '<SIZE:large><IMAGE:' .. bombtype .. ',32,32>' .. getText('ContextMenu_BombStats') .. '<SPACE>' ..
 					healthcolor .. vehicledata.bombHealth .. '/' .. vehicledata.bombStartHealth .. '\n'
-					
+
 				if SandboxVars.CarBombs.UninstallFail then
 					bombdescription = bombdescription .. '<RGB:255,255,255><SIZE:small>' ..
 						getText('ContextMenu_BombStats2') .. '\n' .. successchance * 100 .. '%' ..
@@ -237,37 +228,37 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 			end
 			return
 		end
-		
+
 		if bombs:size() <= 0 or remotebombs:size() <= 0 or proximitybombs:size() <= 0 or timebombs:size() <= 0 then
 			if bombs:size() > 0 then
 				local item = bombs:get(0)
-				context:addOption(getText('ContextMenu_AddBomb'), player, CB.AddingBomb, item, nil, nil);
+				context:addOption(getText('ContextMenu_AddBomb'), player, CBAddingBomb, item, nil, nil);
 			end
-		
+
 			if remotebombs:size() > 0 then
 				local item = remotebombs:get(0)
-				context:addOption(getText('ContextMenu_AddRemoteBomb'), player, CB.AddingBomb, item, nil);
+				context:addOption(getText('ContextMenu_AddRemoteBomb'), player, CBAddingBomb, item, nil);
 			end
-		
+
 			if proximitybombs:size() > 0 then
 				local item = proximitybombs:get(0)
-				context:addOption(getText('ContextMenu_AddProximityBomb'), player, CB.AddingBomb, item, nil);
+				context:addOption(getText('ContextMenu_AddProximityBomb'), player, CBAddingBomb, item, nil);
 			end
-		
+
 			if timebombs:size() > 0 then
 				local item = timebombs:get(0)
-				
-				local bombOption = context:addOption("Add Time Bomb", worldobjects, nil);
-				local bombSubMenu = ISContextMenu:getNew(context);
-				
-				context:addSubMenu(bombOption, bombSubMenu)
-				
-				bombSubMenu:addOption('10 seconds', player, CB.AddingBomb, item, 10);
-				bombSubMenu:addOption('30 seconds', player, CB.AddingBomb, item, 30);
-				bombSubMenu:addOption('1 minute', player, CB.AddingBomb, item, 60);
-			--	bombSubMenu:addOption('5 minutes', player, CB.AddingBomb, item, 300);
 
-			--  while i think it would be fun to have a 5-minute bomb action, pz just has no meaningful capacity for this system to work due to unloading the car's chunk once the player gets far enough. 
+				local bombOption = context:addOption('Add Time Bomb', worldobjects, nil);
+				local bombSubMenu = ISContextMenu:getNew(context);
+
+				context:addSubMenu(bombOption, bombSubMenu)
+
+				bombSubMenu:addOption('10 seconds', player, CBAddingBomb, item, 10);
+				bombSubMenu:addOption('30 seconds', player, CBAddingBomb, item, 30);
+				bombSubMenu:addOption('1 minute', player, CBAddingBomb, item, 60);
+			--	bombSubMenu:addOption('5 minutes', player, CBAddingBomb, item, 300);
+
+			--  while i think it would be fun to have a 5-minute bomb action, pz just has no meaningful capacity for this system to work due to unloading the car's chunk once the player gets far enough.
 			--	this could theoretically work in niche cases, like mp, but i have a feeling the 5-minute option isn't ever really used either way.
 			end
 			return
@@ -276,21 +267,21 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 	return
 end
 
-CB.LinkBomb = function(remote, player, vehicleid)
+CBLinkBomb = function(remote, player, vehicleid)
     if remote:getRemoteControlID() == -1 then
         remote:setRemoteControlID(vehicleid);
     end
 end
 
-function CB.UninstallBomb(player, vehicle)
+function CBUninstallBomb(player, vehicle)
 	local engineHood = nil;
 	local vehicleid = vehicle:getId()
-	
-	engineHood = vehicle:getPartById("EngineDoor");
+
+	engineHood = vehicle:getPartById('EngineDoor');
 	if player:getVehicle() then
 		ISVehicleMenu.onExit(player)
 	end
-	
+
 	if engineHood then
 		ISTimedActionQueue.add(ISPathFindAction:pathToVehicleArea(player, vehicle, engineHood:getArea()))
 		if not engineHood:getDoor() or not engineHood:getInventoryItem() then
@@ -311,12 +302,12 @@ function ISVehicleMenu.showRadialMenu(player)
 
 	local vehicle = player:getVehicle()
 	local menu = getPlayerRadialMenu(player:getPlayerNum())
-	
+
 	if vehicle ~= nil then
 		if menu:isReallyVisible() then
 			if menu.joyfocus then
 				setJoypadFocus(player:getplayerObjNum(), nil)
-			end 
+			end
 			menu:undisplay()
 			return
 		end
@@ -325,28 +316,28 @@ function ISVehicleMenu.showRadialMenu(player)
 		local seat = vehicle:getSeat(player)
 		if seat == 0 or seat == 1 then
 			if vehicledata.Bomb then
-				menu:addSlice(getText('ContextMenu_ArmBomb'), getTexture("media/ui/vehicles/carActivateBomb.png"), CB.ActivateBomb, player, vehicle, nil) 
+				menu:addSlice(getText('ContextMenu_ArmBomb'), getTexture('media/ui/vehicles/carActivateBomb.png'), CBActivateBomb, player, vehicle, nil)
 				menu:addToUIManager()
 			end
 		end
 	end
 end
 
-CB.AddingBomb = function(player, item, timer)
+function CBAddingBomb(player, item, timer)
 	local vehicle = ISVehicleMenu.getVehicleToInteractWith(player)
 	local engineHood = nil;
 	local inventoryItems = player:getInventory():getItems()
 	local vehicleid = vehicle:getId()
-	
+
 	if item:getContainer() ~= player:getInventory() then
 		ISTimedActionQueue.add(ISInventoryTransferAction:new(player, item, item:getContainer(), player:getInventory(), nil))
 	end
 
-	engineHood = vehicle:getPartById("EngineDoor");
+	engineHood = vehicle:getPartById('EngineDoor');
 	if player:getVehicle() then
 		ISVehicleMenu.onExit(player)
 	end
-	
+
 	if engineHood then
 		ISTimedActionQueue.add(ISPathFindAction:pathToVehicleArea(player, vehicle, engineHood:getArea()))
 		if not engineHood:getDoor() or not engineHood:getInventoryItem() then
@@ -360,14 +351,14 @@ CB.AddingBomb = function(player, item, timer)
 	return
 end
 
-CB.ActivateBomb = function(player, vehicle, time, remotelevel)
+function CBActivateBomb(player, vehicle, time, remotelevel)
 	ISTimedActionQueue.add(ActivatingBomb:new(player, vehicle, time, remotelevel))
 	return
 end
 
-function CB.CrashCheck() -- check every tick to find players currently driving and check their velocity for sudden changes
+function CBCrashCheck() -- check every tick to find players currently driving and check their velocity for sudden changes
 	if SandboxVars.CarBombs.AccidentalDetonation then
-		if getWorld():getGameMode() == "Multiplayer" then
+		if getWorld():getGameMode() == 'Multiplayer' then
 			players = getOnlinePlayers();
 		else
 			players = IsoPlayer.getPlayers()
@@ -383,14 +374,14 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 
 					if vehicledata.Bomb then
 					--	if vehicledata.bombHealth == nil then -- cvar set but no bombhealth? probably a pre-v1.2 bomb, fixing it now and displaying warning
-					--		vehicledata.bombHealth = 40 
+					--		vehicledata.bombHealth = 40
 					--		vehicledata.bombStartHealth = 40
 					--	end
 						local velocityvector = Vector3f.new() -- initializes vector
 						local velocitychangedelta = 1.0 -- if the difference in last velocity vs current is greater than delta, car probably crashed
-						
+
 						velocityvector = vehicle:getLinearVelocity(velocityvector)
-						
+
 						if velocityvector:length() > 6.0 then -- change delta if vehicle is moving fast enough. braking at high speeds otherwise could be misinterpreted
 							velocitychangedelta = 2.0
 							print('velocitydelta now 2.0')
@@ -402,13 +393,10 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 						if vehicledata.lastVelocity then -- if the difference in last velocity vector and current velocity vector is greater than delta, crash
 							if vehicledata.lastVelocity:length() > velocityvector:length() and (vehicledata.lastVelocity:length() - velocityvector:length()) > velocitychangedelta then
 								vehicledata.bombHealth = vehicledata.bombHealth - math.ceil(vehicledata.lastVelocity:length() - velocityvector:length())
-								print('CarBombs accident! bombhealth ', vehicledata.bombHealth)
-								print('Velocity difference: ', vehicledata.lastVelocity:length() - velocityvector:length())
-
 								if vehicledata.bombHealth <= 0.0 then
-									if getWorld():getGameMode() == "Multiplayer" then
-										sendClientCommand(vehicle:getId(), "carbombs", "detonate", {["vehicleid"]=vehicle:getId()})
-									else 
+									if getWorld():getGameMode() == 'Multiplayer' then
+										sendClientCommand(vehicle:getId(), 'carbombs', 'detonate', {['vehicleid'] = vehicle:getId()})
+									else
 										ExplodeCar(nil, vehicle)
 									end
 								end
@@ -423,11 +411,8 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 											ditchodds = SandboxVars.CarBombs.DitchingMaxChance
 										end
 
-										print('ditchodds ', ditchodds, 'ditchroll ', ditchroll)
 										if ditchroll <= ditchodds then
-											print('Successful ditch roll')
 											local breakchance = ZombRand(100)+1
-											print('breakchance ', breakchance)
 											if breakchance > 40 then
 												RemoveBomb(nil, vehicle, true, false)
 											else
@@ -436,7 +421,7 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 										end
 									end
 								end
-							end	
+							end
 						end
 						vehicledata.lastVelocity = velocityvector
 					end
@@ -446,9 +431,9 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 	end
 end
 
-function CB.BombCheck()
+function CBBombCheck()
 	for i=0, getTableSize(CIDTimerCars), 1 do -- a primitive timer for bombs that have been enabled
-		if CIDTimerCars[i] ~= nil then 
+		if CIDTimerCars[i] ~= nil then
 			local vehicle = getVehicleById(CIDTimerCars[i])
 			if vehicle == nil then
 				table.remove(CIDTimerCars, i)
@@ -456,44 +441,44 @@ function CB.BombCheck()
 				table.remove(CIDTimerSeconds, vehicleid)
 				break
 			end
-			
+
 			local vehicleid = CIDTimerCars[i]
 			local vehicledata = vehicle:getModData()
-			
+
 			if vehicledata.Bomb ~= true then
 				table.remove(CIDTimerCars, i)
 				table.remove(CIDTimerTick, vehicleid)
 				table.remove(CIDTimerSeconds, vehicleid)
 				break
 			end
-			
+
 			local tick = CIDTimerTick[CIDTimerCars[i]]
-			
-			CIDTimerTick[CIDTimerCars[i]] = tick + 1 
+
+			CIDTimerTick[CIDTimerCars[i]] = tick + 1
 			if CIDTimerTick[CIDTimerCars[i]] == 60 then
-				local second = CIDTimerSeconds[CIDTimerCars[i]]	
+				local second = CIDTimerSeconds[CIDTimerCars[i]]
 				local target = CIDTimerEnd[vehicleid]
-				
+
 				CIDTimerSeconds[vehicleid] = second + 1
 				CIDTimerTick[vehicleid] = 0
 				if second + 1 >= target then
-					if getWorld():getGameMode() == "Multiplayer" then
-						sendClientCommand(CIDPlayerActivated[vehicleid], "carbombs", "detonate", {["vehicleid"]=vehicleid})
-					else 
+					if getWorld():getGameMode() == 'Multiplayer' then
+						sendClientCommand(CIDPlayerActivated[vehicleid], 'carbombs', 'detonate', {['vehicleid'] = vehicleid})
+					else
 						ExplodeCar(nil, vehicle)
 					end
 				end
 			end
 		end
 	end
-	
+
 	for i=0, getTableSize(CIDProximityCars), 1 do -- check entities in a radius and keep a count of zombies
-		if CIDProximityCars[i] ~= nil then		
+		if CIDProximityCars[i] ~= nil then
 			if getVehicleById(CIDProximityCars[i]) == nil then
 				table.remove(CIDProximityCars, i)
 				break
 			end
-			
+
 			local vehicleid = CIDProximityCars[i]
 			local vehicle = getVehicleById(CIDProximityCars[i])
 			local vehicledata = vehicle:getModData()
@@ -501,34 +486,34 @@ function CB.BombCheck()
 			local proxradius = 0;
 			local objects = cell:getLuaObjectList()
 			local inc = 0
-			
+
 			if tonumber(vehicledata.isProximitySensor) == 1 then
 				proxradius = 8;
 			elseif tonumber(vehicledata.isProximitySensor) == 2 then
 				proxradius = 6;
-			else 
+			else
 				proxradius = 4;
 			end
-			
+
 			for k,v in ipairs(objects) do
 				if (vehicle:DistTo(v) < proxradius) and (v:isZombie() or v:isCharacter()) then
 					inc = inc + 1
 					if inc >= 6 then
-						if getWorld():getGameMode() == "Multiplayer" then
-							sendClientCommand(CIDPlayerActivated[vehicleid], "carbombs", "detonate", {["vehicleid"]=vehicleid})
-						else 
+						if getWorld():getGameMode() == 'Multiplayer' then
+							sendClientCommand(CIDPlayerActivated[vehicleid], 'carbombs', 'detonate', {['vehicleid'] = vehicleid})
+						else
 							ExplodeCar(nil, vehicle)
 						end
 					end
 				end
-			end 
-		end		
+			end
+		end
 	end
 end
 
-Events.OnFillWorldObjectContextMenu.Add(CB.OnFillWorldObjectContextMenu)
-Events.OnTick.Add(CB.BombCheck)
-Events.OnTick.Add(CB.CrashCheck)
+Events.OnFillWorldObjectContextMenu.Add(CBOnFillWorldObjectContextMenu)
+Events.OnTick.Add(CBBombCheck)
+Events.OnTick.Add(CBCrashCheck)
 
 Events.OnInitGlobalModData.Add(OnInitGlobalModData)
 Events.OnLoad.Add(OnLoad)

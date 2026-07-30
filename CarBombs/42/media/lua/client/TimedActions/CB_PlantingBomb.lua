@@ -1,4 +1,4 @@
-require "TimedActions/ISBaseTimedAction"
+require 'TimedActions/ISBaseTimedAction'
 
 PlantingBomb = ISBaseTimedAction:derive('PlantingBomb')
 
@@ -24,9 +24,9 @@ function PlantingBomb:waitToStart()
 end
 
 function PlantingBomb:start()
-	self:setActionAnim("VehicleWorkOnTire")
+	self:setActionAnim('VehicleWorkOnTire')
 	self:setOverrideHandModels(nil, nil)
-	self.sound = self.character:getEmitter():playSound("PlantingBomb")
+	self.sound = self.character:getEmitter():playSound('PlantingBomb')
 	addSound(self.character, self.character:getX(), self.character:getY(), self.character:getZ(), 10, 1)
 end
 
@@ -40,20 +40,20 @@ function PlantingBomb:stop()
 end
 
 function PlantingBomb:perform()
+	local world = getSaveInfo(getWorld():getWorld())
+	local vehicleid = self.vehicle:getId()
+	local vehicledata = self.vehicle:getModData()
+
+	vehicledata.Bomb = true
+
 	if self.sound ~= 0 and self.character:getEmitter():isPlaying(self.sound) then
         self.character:getEmitter():stopSound(self.sound);
     end
 
-	local world = getSaveInfo(getWorld():getWorld())
-	local vehicleid = self.vehicle:getId()
-	local vehicledata = self.vehicle:getModData()
-	
-	vehicledata.Bomb = true
-	
 	if self.item:getType() == 'PipeBombRemote' then
 		vehicledata.isRemote = true
 	end
-	
+
 	if self.item:getType() == 'PipeBombSensorV1' then
 		vehicledata.isProximity = true
 		vehicledata.isProximitySensor = 1
@@ -64,17 +64,17 @@ function PlantingBomb:perform()
 		vehicledata.isProximity = true
 		vehicledata.isProximitySensor = 3
 	end
-	
+
 	if self.item:getType() == 'PipeBombTriggered' then
 		vehicledata.isTimed = true
 		vehicledata.isTimedLength = self.timer
 	end
-	
+
 	if SandboxVars.CarBombs.Ditching or SandboxVars.CarBombs.AccidentalDetonation then
 		local healthbonus = 5 * (self.character:getPerkLevel(Perks.Mechanics) - 1)
 		print('healthbonus ', healthbonus)
 		print('Mechanics: ', self.character:getPerkLevel(Perks.Mechanics))
-		if self.character:getPerkLevel(Perks.Mechanics) > 1 then -- if over Mechanics 1, +5 HP per level 
+		if self.character:getPerkLevel(Perks.Mechanics) > 1 then -- if over Mechanics 1, +5 HP per level
 			vehicledata.bombHealth = SandboxVars.CarBombs.AccidentalDetonationHealth + healthbonus
 		else
 			vehicledata.bombHealth = SandboxVars.CarBombs.AccidentalDetonationHealth
@@ -83,11 +83,11 @@ function PlantingBomb:perform()
 		vehicledata.bombStartHealth = vehicledata.bombHealth
 		vehicledata.lastVelocity = Vector3f.new()
 	end
-	
+
 	self.character:getInventory():Remove(self.item)
 	--FinishTimeBasedAction
 	ISBaseTimedAction.perform(self)
-	self.character:Say(getText("IGUI_BombSet"))
+	self.character:Say(getText('IGUI_BombSet'))
 end
 
 function PlantingBomb:new(character, vehicle, item, timer)
@@ -100,6 +100,6 @@ function PlantingBomb:new(character, vehicle, item, timer)
 	o.vehicle = vehicle
 	o.timer = tonumber(timer)
 	o.maxTime = o:getDuration()
-	
+
 	return o
 end
