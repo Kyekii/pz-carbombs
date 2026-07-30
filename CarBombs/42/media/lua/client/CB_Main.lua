@@ -61,6 +61,8 @@ end
 
 local function OnLoad()
 	Events.OnUseVehicle.Add(OnUseVehicle)
+	CBData = ModData.get('CarBombs')
+	
 	if CB.GetModVersion() < CBVersion then -- old version, mark for 1.2 warning
 		CBData.warningAcknowledged = false
 	end
@@ -69,11 +71,14 @@ end
 local function OnInitGlobalModData(newGame) -- check if save has been started before. if yes, let's check for globalmoddata or sandboxvars
 	CBData = ModData.get('CarBombs')
 	if not newGame and not CBData then -- no globalmoddata, could be old version of mod. hopefully mp-compliant will check later
+		print('[CarBombs] Warning not acknowledged - not NewGame and CBData doesn\'t exist!')
     	CBData = ModData.getOrCreate('CarBombs')
 		CBData.warningAcknowledged = false
-		print('[CarBombs] Warning not acknowledged - not NewGame and CBData doesn\'t exist!')
 	else -- no need to worry about check if it's a brand new save
+		print('[CarBombs] newGame and no CBData. No warning necessary.')
+		CBData = ModData.getOrCreate('CarBombs')
 		CBData.warningAcknowledged = true
+		CB.SetModVersion(CBVersion) -- write file
 	end
 	CBData.version = CBVersion
 end
