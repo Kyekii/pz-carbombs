@@ -1,7 +1,10 @@
 {
-
-  "IGUI_BombSet": "Bomba Colocada!",
-  "IGUI_BombTimerArm": "Contador Ativado!",
-  "IGUI_BombProxArm": "Bomba de Proximidade Ativada!",
-  "IGUI_BombTooFar": "Bomba está muito longe!"
+  "IGUI_BombSet": "Bomba colocada!",
+  "IGUI_BombTimerArm": "Contador ativado!",
+  "IGUI_BombProxArm": "Bomba de Proximidade ativada!",
+  "IGUI_BombTooFar": "Bomba está muito longe!",
+  "IGUI_BombDitched": "A Bomba no Veículo se descolou!",
+  "IGUI_BombUninstallFail": "Eu não consegui remover-la...",
+  "IGUI_BombUninstallDismantle": "Eu removi, mas a bomba caiu aos pedaços!",
+  "IGUI_BombUninstallSuccess": "Bomba removida."
 }

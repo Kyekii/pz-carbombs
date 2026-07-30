@@ -1,13 +1,15 @@
 {
-
   "ContextMenu_AddBomb": "Coloque uma Bomba de Cano",
   "ContextMenu_AddProximityBomb": "Coloque uma Bomba de Proximidade",
   "ContextMenu_AddTimeBomb": "Coloque uma Bomba Relógio",
   "ContextMenu_AddRemoteBomb": "Coloque uma Bomba Remota",
-
   "ContextMenu_AddCarTrigger": "Emparelhar bomba com controle",
-
   "ContextMenu_ArmBomb": "Ativar Bomba de Cano",
+  "ContextMenu_UninstallBomb": "Remover Bomba",
 
-  "ContextMenu_CarBombSuicide": "Ativar este tipo de bomba irá mata-lo imediatamente!"
+  "ContextMenu_CarBombSuicide": "Ativar este tipo de bomba irá mata-lo imediatamente!",
+  "ContextMenu_CarBombSuicideMisc": "Ativar este tipo de bomba irá explodir imediatamente após a ignição do carro!",
+  "ContextMenu_BombStats": "Saúde da Bomba: ",
+  "ContextMenu_BombStats2": "Chance de Remoção: ",
+  "ContextMenu_BombStats3": "Chance de Quebrar a Bomba na Remoção: "
 }

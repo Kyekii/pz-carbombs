@@ -1,0 +1,21 @@
+{
+    "Sandbox_CarBombs": "Car Bombs",
+    "Sandbox_CarBombs_AccidentalDetonation": "Detonação Acidental",
+    "Sandbox_CarBombs_AccidentalDetonation_tooltip": "Impactos de carro irão diminuir a 'Saúde da Bomba', e quando chegar a 0, a Bomba irá detonar.",
+    "Sandbox_CarBombs_AccidentalDetonationHealth": "Saúde da Bomba Base",
+    "Sandbox_CarBombs_AccidentalDetonationHealth_tooltip": "Saúde inicial das bombas, quando Detonação Acidental ou Abandono está ativado.\nBonus são aplicados baseados na sua Habilidade de Mecânica.",
+    "Sandbox_CarBombs_Ditching": "Abandono",
+    "Sandbox_CarBombs_Ditching_tooltip": "Impactos de carro abaixo de certa velocidade terá a chance de ejetar a bomba do veículo.\nA chance começa no 0, e lentamente aumenta quando a saúde da bomba atingir a Porcentagem Inicial de Abandono.\nQuando a bomba chegar na Porcentagem Final de Abandono, A chance será maximizada.",
+    "Sandbox_CarBombs_DitchingMaxChance": "Chance Máxima de Abandono",
+    "Sandbox_CarBombs_DitchingMaxChance_tooltip": "quando a saúde da bomba está abaixo da Porcentagem Final de Abandono, essa é a chance de ejetar a bomba.",
+    "Sandbox_CarBombs_DitchingStartThreshold": "Porcentagem Inicial de Abandono",
+    "Sandbox_CarBombs_DitchingStartThreshold_tooltip": "Quando a Saúde da Bomba está abaixo desta Porcentagem, a chance de abandono irá lentamente e linearmente subir até o máximo",
+    "Sandbox_CarBombs_DitchingEndThreshold": "Porcentagem Final de Abandono",
+    "Sandbox_CarBombs_DitchingEndThreshold_tooltip": "Quando a Saúde da Bomba está abaixo desta Porcentagem, a chance de abandono acontecer estará no seu máximo.",
+    "Sandbox_CarBombs_UninstallFail": "Falha na Remoção",
+    "Sandbox_CarBombs_UninstallFail_tooltip": "Se ligado, irá ter uma chance para o seu personagem falhar na remoção, ou acidentalmente desmontar a bomba.\nA chance é definida pela Chance de Desmontagem na Remoção e Chance Base de Remoção , e é influenciado pela sua Habilidade Eletrônica.",
+    "Sandbox_CarBombs_UninstallSuccessRate": "Chance Base de Remoção",
+    "Sandbox_CarBombs_UninstallSuccessRate_tooltip": "A chance de seu personagem remover uma bomba com sucesso .\nIsso e influenciado pela sua Habilidade Eletrônica.",
+    "Sandbox_CarBombs_UninstallDismantleRate": "Chance de Desmontagem na Remoção",
+    "Sandbox_CarBombs_UninstallDismantleRate_tooltip": "Numa tentativa com sucesso de remoção, essa e a chance que a remoção irá resultar em uma bomba de cano despedaçada.\nIsso é influenciado pela sua Habilidade Eletrônica.\nCaso queira desativar, simplesmente define a porcentagem para 0."
+}
