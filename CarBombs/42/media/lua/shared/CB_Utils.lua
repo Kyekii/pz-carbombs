@@ -261,7 +261,6 @@ function ExplodeCar(player, vehicle)
 	radius = math.floor(radius * flammablemultiplier) -- final radius
 	local firecount = math.floor((((radius ^ 2) * 9) - radius ^ 2) * 0.02)
 	print('[CarBombs] Vehicle ' .. vehicleid .. ' detonation: FlammableMultiplier ' .. flammablemultiplier .. ', radius ' .. radius)
-	print('[CarBombs] flammablearray size: ' .. getTableSize(flammablearray))
 
 	if getWorld():getGameMode() ~= 'Multiplayer' then
 		local emitter = vehicle:getEmitter()

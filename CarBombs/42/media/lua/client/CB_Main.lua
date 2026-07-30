@@ -376,10 +376,6 @@ function CBCrashCheck() -- check every tick to find players currently driving an
 					local vehicledata = vehicle:getModData()
 
 					if vehicledata.Bomb then
-					--	if vehicledata.bombHealth == nil then -- cvar set but no bombhealth? probably a pre-v1.2 bomb, fixing it now and displaying warning
-					--		vehicledata.bombHealth = 40
-					--		vehicledata.bombStartHealth = 40
-					--	end
 						local velocityvector = Vector3f.new() -- initializes vector
 						local velocitychangedelta = 1.0 -- if the difference in last velocity vs current is greater than delta, car probably crashed
 
@@ -387,10 +383,8 @@ function CBCrashCheck() -- check every tick to find players currently driving an
 
 						if velocityvector:length() > 6.0 then -- change delta if vehicle is moving fast enough. braking at high speeds otherwise could be misinterpreted
 							velocitychangedelta = 2.0
-							print('velocitydelta now 2.0')
 						elseif velocityvector:length() > 10.0 then
 							velocitychangedelta = 3.0
-							print('velocitydelta now 3.0')
 						end
 
 						if vehicledata.lastVelocity then -- if the difference in last velocity vector and current velocity vector is greater than delta, crash

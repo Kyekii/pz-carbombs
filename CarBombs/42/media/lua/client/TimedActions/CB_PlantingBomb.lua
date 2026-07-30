@@ -72,8 +72,6 @@ function PlantingBomb:perform()
 
 	if SandboxVars.CarBombs.Ditching or SandboxVars.CarBombs.AccidentalDetonation then
 		local healthbonus = 5 * (self.character:getPerkLevel(Perks.Mechanics) - 1)
-		print('healthbonus ', healthbonus)
-		print('Mechanics: ', self.character:getPerkLevel(Perks.Mechanics))
 		if self.character:getPerkLevel(Perks.Mechanics) > 1 then -- if over Mechanics 1, +5 HP per level
 			vehicledata.bombHealth = SandboxVars.CarBombs.AccidentalDetonationHealth + healthbonus
 		else
