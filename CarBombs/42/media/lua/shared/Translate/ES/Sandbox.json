@@ -1,0 +1,21 @@
+{
+    "Sandbox_CarBombs": "Car Bombs",
+    "Sandbox_CarBombs_AccidentalDetonation": "Detonacion accidental",
+    "Sandbox_CarBombs_AccidentalDetonation_tooltip": "Impactos en el vehiculo disminuiran la 'vida de la bomba', detonandola cuando esta llegue a 0",
+    "Sandbox_CarBombs_AccidentalDetonationHealth": "Vida base de bomba",
+    "Sandbox_CarBombs_AccidentalDetonationHealth_tooltip": "Vida inicial de las bombas, aplica cuando Detonacion accidental o Eyeccion estan activados. \nSe aplicaran bonificadores segun tu habilidad de mecanico",
+    "Sandbox_CarBombs_Ditching": "Eyeccion",
+    "Sandbox_CarBombs_Ditching_tooltip": "Impactos en vehiculos debajo de cierta velocidad tendran una probabilidad de eyectar la bomba del vehiculo.\nTLa probabilidad empieza en 0, y una vez la vida de la bomba alcance el umbral de eyeccion incrementará proporcionalmente.\nCuando la vida baje lo suficiente para llegar al Tope de eyeccion, la probabilidad alcanzara su maximo",
+    "Sandbox_CarBombs_DitchingMaxChance": "Maxima probabilidad de eyeccion",
+    "Sandbox_CarBombs_DitchingMaxChance_tooltip": "Cuando la vida de la bomba alcanze el Tope de eyeccion, esta sera su probabilidad de eyectar la bomba",
+    "Sandbox_CarBombs_DitchingStartThreshold": "Probabilidad inicial de eyeccion",
+    "Sandbox_CarBombs_DitchingStartThreshold_tooltip": "A medida que la bomba sea menor al Umbral de eyección, la probabilidad de eyectar aumentara proporcionalmente hasta su maximo a partir de este valor.",
+    "Sandbox_CarBombs_DitchingEndThreshold": "Tope de eyeccion",
+    "Sandbox_CarBombs_DitchingEndThreshold_tooltip": "Cuando la vida de la bomba alcance este porcentaje, la probabilidad de eyeccion estara en su maximo.",
+    "Sandbox_CarBombs_UninstallFail": "Fallo durante el desmontaje",
+	"Sandbox_CarBombs_UninstallFail_tooltip": "Una vez activado habra una probabilidad de fallar desactivar una bomba, o de desmontarla al desactivarla.\nEsta probabilidad esta definida por la Probabilidad de desactivar y desmantelar asi como tu habilidad en electronica.",
+    "Sandbox_CarBombs_UninstallSuccessRate": "Probabilidad de desactivar",
+    "Sandbox_CarBombs_UninstallSuccessRate_tooltip": "La probabilidad de que tu personaje logre desactivar una bomba.\nEsta es influenciada por tu habilidad en electronica .",
+    "Sandbox_CarBombs_UninstallDismantleRate": "Probabilidad de desmontar",
+    "Sandbox_CarBombs_UninstallDismantleRate_tooltip": "En el caso de una desactivacion exitosa, esta es la probabilidad de que resulte en una bomba casera rota.\nEste cambiará segun tu habilidad en electronica.\nSi no quieres que esto pase, cambia este valor a 0."
+}

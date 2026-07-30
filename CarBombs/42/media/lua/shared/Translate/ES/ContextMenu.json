@@ -1,0 +1,15 @@
+{
+  "ContextMenu_AddBomb": "Plantar bomba casera",
+  "ContextMenu_AddProximityBomb": "Plantar bomba con sensor",
+  "ContextMenu_AddTimeBomb": "Plantar bomba con temporizador",
+  "ContextMenu_AddRemoteBomb": "Plantar bomba remota",
+  "ContextMenu_AddCarTrigger": "Enlazar bomba remota",
+  "ContextMenu_ArmBomb": "Activar bomba",
+  "ContextMenu_UninstallBomb": "Desactivar bomba",
+
+  "ContextMenu_CarBombSuicide": "Activar este tipo de bomba te matara de inmediato!",
+  "ContextMenu_CarBombSuicideMisc": "Este tipo de bomba explotará inmediatamente apenas enciendas el vehiculo",
+  "ContextMenu_BombStats": "Vida de la bomba: ",
+  "ContextMenu_BombStats2": "Probabilidad de desactivar: ",
+  "ContextMenu_BombStats3": "Probabilidad de desmantelar la bomba al desactivar: "
+}

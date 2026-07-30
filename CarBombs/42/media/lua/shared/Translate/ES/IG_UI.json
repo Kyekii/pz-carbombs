@@ -1,0 +1,10 @@
+{
+  "IGUI_BombSet": "Bomba armada",
+  "IGUI_BombTimerArm": "Temporizador activado",
+  "IGUI_BombProxArm": "Proximidad activada",
+  "IGUI_BombTooFar": "La bomba esta muy lejos!",
+  "IGUI_BombDitched": "La bomba en el vehiculo se rompio",
+  "IGUI_BombUninstallFail": "No puse desactivarla...",
+  "IGUI_BombUninstallDismantle": "Esta desactivada, pero no la pude recuperar",
+  "IGUI_BombUninstallSuccess": "Bomba desarmada"
+}
