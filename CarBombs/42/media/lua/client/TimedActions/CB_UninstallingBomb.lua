@@ -53,12 +53,12 @@ function UninstallingBomb:perform()
 			roll = (ZombRand(0, 100)+1)/100 -- second roll to determine if you dismantled the bomb, instead of recovering it
 			print('DismantleRoll: ', roll, ' <= ', dismantlechance)
 			if roll <= dismantlechance then
-				RemoveBomb(self.character, self.vehicle, true)
+				RemoveBomb(self.character, self.vehicle, true, false)
 				self.character:getEmitter():playSound("BreakMetalItem")
 				self.character:Say(getText("IGUI_BombUninstallDismantle"))
 				return
 			else
-				RemoveBomb(self.character, self.vehicle, false)
+				RemoveBomb(self.character, self.vehicle, false, false)
 				self.character:Say(getText("IGUI_BombUninstallSuccess"))
 				return
 			end
@@ -67,7 +67,7 @@ function UninstallingBomb:perform()
 			return
 		end
 	else
-		RemoveBomb(self.character, self.vehicle, false)
+		RemoveBomb(self.character, self.vehicle, false, false)
 		self.character:Say(getText("IGUI_BombUninstallSuccess"))
 		return
 	end

@@ -241,7 +241,7 @@ function CB.OnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 		if bombs:size() <= 0 or remotebombs:size() <= 0 or proximitybombs:size() <= 0 or timebombs:size() <= 0 then
 			if bombs:size() > 0 then
 				local item = bombs:get(0)
-				context:addOption(getText('ContextMenu_AddBomb'), player, CB.AddingBomb, item, nil);
+				context:addOption(getText('ContextMenu_AddBomb'), player, CB.AddingBomb, item, nil, nil);
 			end
 		
 			if remotebombs:size() > 0 then
@@ -332,7 +332,7 @@ function ISVehicleMenu.showRadialMenu(player)
 	end
 end
 
-CB.AddingBomb = function(player, item, vehicle, timer)
+CB.AddingBomb = function(player, item, timer)
 	local vehicle = ISVehicleMenu.getVehicleToInteractWith(player)
 	local engineHood = nil;
 	local inventoryItems = player:getInventory():getItems()
@@ -429,9 +429,9 @@ function CB.CrashCheck() -- check every tick to find players currently driving a
 											local breakchance = ZombRand(100)+1
 											print('breakchance ', breakchance)
 											if breakchance > 40 then
-												RemoveBomb(nil, vehicle, true)
+												RemoveBomb(nil, vehicle, true, false)
 											else
-												RemoveBomb(nil, vehicle, false)
+												RemoveBomb(nil, vehicle, false, false)
 											end
 										end
 									end
@@ -472,10 +472,11 @@ function CB.BombCheck()
 			CIDTimerTick[CIDTimerCars[i]] = tick + 1 
 			if CIDTimerTick[CIDTimerCars[i]] == 60 then
 				local second = CIDTimerSeconds[CIDTimerCars[i]]	
+				local target = CIDTimerEnd[vehicleid]
 				
 				CIDTimerSeconds[vehicleid] = second + 1
 				CIDTimerTick[vehicleid] = 0
-				if CIDTimerSeconds[vehicleid] == CIDTimerEnd[vehicleid] then
+				if second + 1 >= target then
 					if getWorld():getGameMode() == "Multiplayer" then
 						sendClientCommand(CIDPlayerActivated[vehicleid], "carbombs", "detonate", {["vehicleid"]=vehicleid})
 					else 

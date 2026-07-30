@@ -65,13 +65,14 @@ function FindCarWreak(vehicle) -- returns the best matching vanilla car wreck to
 	return 'Base.CarNormalBurnt' -- finally, if no matches, just return the default model
 end
 
-function RemoveBomb(player, vehicle, wasDismantled)
+function RemoveBomb(player, vehicle, wasDismantled, wasDetonated)
 	local vehicledata = vehicle:getModData()
+	local vehicleid = vehicle:getId()
 	local bombType = 'Base.PipeBomb'
 
 	vehicledata.Bomb = nil
 	
-	if vehicledata.isTimed then -- remove from timed array
+	if vehicledata.isTimed and wasDetonated then -- remove from timed array
 		bombType = 'Base.PipeBombTriggered'
 		for i=0, getTableSize(CIDTimerCars), 1 do
 			if CIDTimerCars[i] == vehicleid then
@@ -83,7 +84,7 @@ function RemoveBomb(player, vehicle, wasDismantled)
 		end
 	end
 	
-	if vehicledata.isProximity then -- remove from proximity array
+	if vehicledata.isProximity and wasDetonated then -- remove from proximity array
 		bombType = 'Base.PipeBombSensorV' .. vehicledata.isProximitySensor
 		for i=0, getTableSize(CIDProximityCars), 1 do
 			if CIDProximityCars[i] == vehicleid then
@@ -98,7 +99,7 @@ function RemoveBomb(player, vehicle, wasDismantled)
 	end
 
 	if player then -- if player is specified, we know it's CB.UninstallingBomb timedaction
-		if wasDismantled then
+		if wasDismantled and not wasDetonated then
 			local worldItem = nil
 			for i=0, ZombRand(3)+1, 1 do -- 1-3 electronic scrap
 				worldItem = instanceItem('Base.ElectronicsScrap')
@@ -120,8 +121,7 @@ function RemoveBomb(player, vehicle, wasDismantled)
 		end
 	end
 
-	if player == nil and SandboxVars.CarBombs.Ditching then -- initiate ditching, play noise and tell passengers the bomb fell off
-		if wasDismantled == nil then return end -- if dismantled is nil, the bomb was detonated, not uninstalled/ditched
+	if player == nil and SandboxVars.CarBombs.Ditching and not wasDetonated then -- initiate ditching, play noise and tell passengers the bomb fell off
 		if wasDismantled then
 			local worldItem = nil
 			for i=0, ZombRand(3)+1, 1 do -- 1-3 electronic scrap
@@ -186,7 +186,7 @@ function ExplodeCar(player, vehicle)
 		end
 	end
 	
-	RemoveBomb(nil, vehicle, nil) 
+	RemoveBomb(nil, vehicle, false, true) 
 
 	local radius = 5;
 	if vehicle:getRemainingFuelPercentage() > 50 and not NaN then -- this will return NaN if there is no fuel tank
