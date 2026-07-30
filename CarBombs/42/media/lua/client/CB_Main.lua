@@ -70,16 +70,18 @@ end
 
 local function OnInitGlobalModData(newGame) -- check if save has been started before. if yes, let's check for globalmoddata or sandboxvars
 	CBData = ModData.get('CarBombs')
+
 	if not newGame and not CBData then -- no globalmoddata, could be old version of mod. hopefully mp-compliant will check later
 		print('[CarBombs] Pre-v1.2 warning not acknowledged - not NewGame and CBData doesn\'t exist!')
     	CBData = ModData.getOrCreate('CarBombs')
 		CBData.warningAcknowledged = false
 	else -- no need to worry about check if it's a brand new save
-		print('[CarBombs] newGame and no CBData. No warning necessary.')
+		print('[CarBombs] newGame, or existing CBData found. No warning necessary.')
 		CBData = ModData.getOrCreate('CarBombs')
 		CBData.warningAcknowledged = true
-		CBSetModVersion(CBVersion) -- write file
+		CBSetModVersion(CBVersion)
 	end
+
 	CBData.version = CBVersion
 end
 
@@ -98,11 +100,11 @@ end
 
 function CBVersionWarning(player)
 	if CBData.warningAcknowledged == true then return end
-	CBData.warningAcknowledged = true
 
 	local width, height = 350, 140
 	local dialog = ISCarBombWarning:new((getCore():getScreenWidth() / 2) - width / 2, (getCore():getScreenHeight() / 2) - height / 2, width, height)
 
+	CBData.warningAcknowledged = true
 	dialog:initialise()
 	dialog:addToUIManager()
 	CBSetModVersion(CBVersion)
@@ -180,12 +182,12 @@ function CBOnFillWorldObjectContextMenu(playerId, context, worldobjects, test)
 		if vehicledata.Bomb then
 			if CIDTimerTick[vehicleid] ~= nil then return end
 
-			for i=0, getTableSize(CIDProximityCars), 1 do
+			for i = 0, getTableSize(CIDProximityCars), 1 do
 				if CIDProximityCars[i] == vehicleid then return end -- bomb's proximity fuse is activated
 			end
 
 			if vehicledata.isRemote == true and remote:size() > 0 then
-				for i=0, player:getInventory():getItems():size() -1 do
+				for i = 0, player:getInventory():getItems():size() - 1 do
 					local item = player:getInventory():getItems():get(i)
 					if item:isRemoteController() and item:getRemoteControlID() == -1 then
 						context:addOption(getText('ContextMenu_AddCarTrigger'), item, CBLinkBomb, player, vehicleid)
