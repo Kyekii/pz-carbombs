@@ -121,6 +121,7 @@ function RemoveBomb(player, vehicle, wasDismantled)
 	end
 
 	if player == nil and SandboxVars.CarBombs.Ditching then -- initiate ditching, play noise and tell passengers the bomb fell off
+		if wasDismantled == nil then return end -- if dismantled is nil, the bomb was detonated, not uninstalled/ditched
 		if wasDismantled then
 			local worldItem = nil
 			for i=0, ZombRand(3)+1, 1 do -- 1-3 electronic scrap
@@ -135,7 +136,7 @@ function RemoveBomb(player, vehicle, wasDismantled)
 				worldItem = instanceItem('Base.MetalPipe') 
 				worldItem:setCondition(ZombRand(worldItem:getConditionMax()/2) + (worldItem:getConditionMax()/2)) -- condition always above 50%
 			end
-		else
+		elseif wasDismantled then
 			local worldItem = instanceItem(bombType)
 			vehicle:getSquare():AddWorldInventoryItem(worldItem, 0.5, 0.5, 0)
 			getSoundManager():PlayWorldSound("BreakMetalItem", vehicle:getSquare(), 0, 20, 5.0, true)
@@ -185,7 +186,7 @@ function ExplodeCar(player, vehicle)
 		end
 	end
 	
-	RemoveBomb(nil, vehicle, false)
+	RemoveBomb(nil, vehicle, nil) 
 
 	local radius = 5;
 	if vehicle:getRemainingFuelPercentage() > 50 and not NaN then -- this will return NaN if there is no fuel tank
