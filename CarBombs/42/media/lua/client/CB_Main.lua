@@ -45,6 +45,7 @@ function CBSetModVersion(CBVersion) -- this returns "true" or "false" depending 
 	end
 
 	writer:write('VERSION='..CBVersion)
+	writer:close()
 	return existed
 end
 
