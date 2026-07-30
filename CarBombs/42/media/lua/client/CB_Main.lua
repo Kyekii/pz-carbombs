@@ -48,7 +48,7 @@ function CB.SetModVersion(CBVersion) -- this returns "true" or "false" depending
 	return existed
 end
 
-function CB.LegacyVehicleChecker(player, vehicle) -- check if the vehicle needs to be updated 
+function CB.LegacyVehicleChecker(player, vehicle) -- check if the vehicle needs to be updated from pre-v1.2
 	if not vehicle:getModData() then return end
 
 	local vehicledata = vehicle:getModData()
@@ -63,7 +63,7 @@ local function OnLoad()
 	Events.OnUseVehicle.Add(OnUseVehicle)
 	CBData = ModData.get('CarBombs')
 	
-	if CB.GetModVersion() < CBVersion then -- old version, mark for 1.2 warning
+	if CB.GetModVersion() < CBVersion then -- old version, mark for v1.2 warning
 		CBData.warningAcknowledged = false
 	end
 end
@@ -71,7 +71,7 @@ end
 local function OnInitGlobalModData(newGame) -- check if save has been started before. if yes, let's check for globalmoddata or sandboxvars
 	CBData = ModData.get('CarBombs')
 	if not newGame and not CBData then -- no globalmoddata, could be old version of mod. hopefully mp-compliant will check later
-		print('[CarBombs] Warning not acknowledged - not NewGame and CBData doesn\'t exist!')
+		print('[CarBombs] Pre-v1.2 warning not acknowledged - not NewGame and CBData doesn\'t exist!')
     	CBData = ModData.getOrCreate('CarBombs')
 		CBData.warningAcknowledged = false
 	else -- no need to worry about check if it's a brand new save
